@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "devmind"
+version = "0.1.0"
+description = "Evidence-grounded Python repository bug analysis and safe repair proposals"
+readme = "MANUAL.md"
+requires-python = ">=3.12"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0,<9", "httpx>=0.27,<0.29"]
+ui = ["streamlit>=1.62,<2"]
+embeddings = ["numpy>=1.26,<3", "sentence-transformers>=3,<6"]
+api = ["fastapi>=0.115,<0.116", "starlette>=0.46,<0.47", "pydantic>=2.6,<3", "uvicorn>=0.30,<1"]
+
+[project.scripts]
+devmind = "devmind.cli:main"
+devmind-evaluate = "devmind.evaluation_cli:main"
+devmind-swebench = "devmind.swebench_cli:main"
+devmind-retrieval-evaluate = "devmind.retrieval_evaluation:main"
+devmind-api = "devmind.api:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+

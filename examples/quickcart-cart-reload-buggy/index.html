@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuickCart — Modern E-Commerce Store</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #10b981;
+      --danger: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 24px; min-height: 100vh; }
+    .header { max-width: 1100px; margin: 0 auto 32px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); padding-bottom: 20px; }
+    .logo { font-size: 1.6rem; font-weight: 800; color: #60a5fa; display: flex; align-items: center; gap: 8px; }
+    .cart-btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 9999px; font-size: 1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
+    .cart-btn:hover { background: var(--primary-hover); }
+    .notice-banner { max-width: 1100px; margin: 0 auto 28px; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 12px; padding: 14px 18px; color: #fca5a5; font-size: 0.95rem; line-height: 1.5; }
+    .notice-banner strong { color: #fee2e2; }
+    .products-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+    .product-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; transition: transform 0.2s, border-color 0.2s; }
+    .product-card:hover { transform: translateY(-4px); border-color: #60a5fa; }
+    .product-img { width: 100%; height: 160px; border-radius: 12px; margin-bottom: 16px; background: #334155; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; }
+    .product-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
+    .product-desc { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px; flex-grow: 1; }
+    .product-footer { display: flex; justify-content: space-between; align-items: center; }
+    .product-price { font-size: 1.3rem; font-weight: 800; color: var(--accent); }
+    .add-btn { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+    .add-btn:hover { background: var(--primary-hover); }
+    .cart-drawer { max-width: 1100px; margin: 36px auto 0; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 24px; }
+    .cart-drawer h2 { font-size: 1.3rem; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+    .cart-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: rgba(255, 255, 255, 0.03); border-radius: 8px; }
+    .empty-cart-msg { color: var(--text-muted); font-style: italic; padding: 12px 0; }
+    .cart-total-bar { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--card-border); display: flex; justify-content: space-between; align-items: center; font-size: 1.2rem; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="logo">⚡ QuickCart</div>
+    <button class="cart-btn" onclick="document.getElementById('cartDrawer').scrollIntoView({behavior:'smooth'})">
+      🛒 Cart (<span id="cartCount">0</span>)
+    </button>
+  </header>
+
+  <div class="notice-banner">
+    <strong>⚠️ Live Bug Reproduction:</strong> Click <em>"+ Add to Cart"</em> on any product below. The cart counter will increase. Now press <strong>Ctrl + R (Refresh)</strong>. Notice that the cart resets to 0 and all items disappear! Then run <strong>DevMind</strong> to repair it.
+  </div>
+
+  <main class="products-grid">
+    <div class="product-card">
+      <div class="product-img">👟</div>
+      <div class="product-title">Nike Air Running Shoes</div>
+      <div class="product-desc">Breathable lightweight sneakers designed for road running and comfort.</div>
+      <div class="product-footer">
+        <span class="product-price">₹2,499</span>
+        <button class="add-btn" onclick="addToCart('Nike Air Running Shoes', 2499)">+ Add to Cart</button>
+      </div>
+    </div>
+
+    <div class="product-card">
+      <div class="product-img">⌚</div>
+      <div class="product-title">Fossil Chronograph Watch</div>
+      <div class="product-desc">Stainless steel analog timepiece with water resistance and midnight dial.</div>
+      <div class="product-footer">
+        <span class="product-price">₹4,999</span>
+        <button class="add-btn" onclick="addToCart('Fossil Chronograph Watch', 4999)">+ Add to Cart</button>
+      </div>
+    </div>
+
+    <div class="product-card">
+      <div class="product-img">🎧</div>
+      <div class="product-title">Boat Rockerz Headphones</div>
+      <div class="product-desc">Wireless over-ear headphones with 40-hour playback and dual EQ modes.</div>
+      <div class="product-footer">
+        <span class="product-price">₹1,299</span>
+        <button class="add-btn" onclick="addToCart('Boat Rockerz Headphones', 1299)">+ Add to Cart</button>
+      </div>
+    </div>
+  </main>
+
+  <section class="cart-drawer" id="cartDrawer">
+    <h2>
+      <span>Your Shopping Cart</span>
+      <button onclick="clearCart()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:0.85rem;">Clear All</button>
+    </h2>
+    <div id="cartItemsContainer">
+      <p class="empty-cart-msg">Your cart is currently empty. Click "Add to Cart" above to start shopping.</p>
+    </div>
+    <div class="cart-total-bar">
+      <span>Total Amount:</span>
+      <span id="cartTotal" style="color:var(--accent);">₹0</span>
+    </div>
+  </section>
+
+  <script>
+    let cartItems = [];
+    let cartCount = 0;
+
+    // BUG: this refreshes the badge but never restores saved cart items.
+    window.addEventListener("load", function () {
+      loadCartFromStorage();
+      updateCartDisplay();
+    });
+
+    function loadCartFromStorage() {
+      const savedCart = localStorage.getItem("quickCartItems");
+      if (savedCart) {
+        cartItems = JSON.parse(savedCart);
+        cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+      }
+    }
+
+    function saveCartToStorage() {
+      localStorage.setItem("quickCartItems", JSON.stringify(cartItems));
+    }
+
+    function addToCart(productName, price) {
+      const existingItem = cartItems.find((item) => item.name === productName);
+      if (existingItem) existingItem.quantity += 1;
+      else cartItems.push({ name: productName, price, quantity: 1 });
+      cartCount += 1;
+      saveCartToStorage();
+      updateCartDisplay();
+    }
+
+    function clearCart() {
+      cartItems = [];
+      cartCount = 0;
+      localStorage.removeItem("quickCartItems");
+      updateCartDisplay();
+    }
+
+    function updateCartDisplay() {
+      const badge = document.getElementById("cartCount");
+      if (badge) badge.textContent = String(cartCount);
+
+      const container = document.getElementById("cartItemsContainer");
+      const totalEl = document.getElementById("cartTotal");
+      if (!container) return;
+
+      if (cartItems.length === 0) {
+        container.innerHTML = '<p class="empty-cart-msg">Your cart is currently empty. Click "+ Add to Cart" above to start shopping.</p>';
+        if (totalEl) totalEl.textContent = "₹0";
+      } else {
+        let html = '<ul class="cart-list">';
+        let total = 0;
+        cartItems.forEach(item => {
+          total += item.price * item.quantity;
+          html += `<li class="cart-item">
+            <div>
+              <strong>${item.name}</strong>
+              <div style="font-size:0.85rem;color:#94a3b8;">₹${item.price.toLocaleString()} × ${item.quantity}</div>
+            </div>
+            <span style="font-weight:700;color:#10b981;">₹${(item.price * item.quantity).toLocaleString()}</span>
+          </li>`;
+        });
+        html += '</ul>';
+        container.innerHTML = html;
+        if (totalEl) totalEl.textContent = "₹" + total.toLocaleString();
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,310 @@
+[
+  {
+    "status": "analysis_complete",
+    "issue": "When I add an item to the cart, it appears immediately but disappears after reloading the page. Find the cart persistence and initialization code and explain what behavior the repository currently implements.",
+    "analysis": {
+      "summary": "When I add an item to the cart, it appears immediately but disappears after reloading the page. Find the cart persistence and initialization code and explain what behavior the repository currently implements.",
+      "keywords": [
+        "cart",
+        "add",
+        "appears",
+        "behavior",
+        "code",
+        "currently",
+        "disappears",
+        "explain",
+        "find",
+        "immediately",
+        "implements",
+        "initialization"
+      ],
+      "issue_type": "behavior",
+      "component_hints": [],
+      "retrieval_method": "tfidf_cosine",
+      "score_metric": "cosine_similarity",
+      "repository_source": "Public GitHub archive",
+      "repository_name": "Kanduriavinash/QuickCart",
+      "repository_url": "https://github.com/Kanduriavinash/QuickCart",
+      "repository_default_branch": "main",
+      "repository_commit_sha": "cfcb1dfb49118911e41109f0b2e23e6e639defbf",
+      "repository_archive_sha256": "7e7dee064eccb394ff886ea4b13df38ce13172d2a337889ef6c692a0cf1674da",
+      "repository_pushed_at": "2026-08-27T16:23:05Z",
+      "repository_skipped_symlinks": 0
+    },
+    "plan": [
+      "Inspect the bug report and its extracted issue features.",
+      "Index supported source functions and classes without executing repository files.",
+      "Retrieve source evidence matching the issue terms and component hints.",
+      "Compare candidate source behavior with the reported symptom and identify tests.",
+      "Propose a minimal diff only when evidence is sufficient, then verify it in isolation."
+    ],
+    "evidence": [
+      {
+        "path": "index3.html",
+        "name": "addToCart",
+        "kind": "Function",
+        "start_line": 2683,
+        "end_line": 2721,
+        "score": 0.138577,
+        "content": "    function addToCart(button, productName, price, imageUrl) {\n      // Find or create cart item\n      const existingItem = cartItems.find(item => item.name === productName);\n      if (existingItem) {\n        existingItem.quantity += 1;\n      } else {\n        cartItems.push({\n          id: Date.now(),\n          name: productName,\n          price: price,\n          image: imageUrl,\n          quantity: 1\n        });\n      }\n      cartCount++;\n      \n      // Save to localStorage\n      saveCartToStorage();\n      \n      // Create fly-to-cart animation\n      createFlyToCartAnimation(button, imageUrl);\n      \n      // Show notification\n      showCartNotification(productName, imageUrl);\n      \n      // Update cart count with animation\n      setTimeout(() => {\n        updateCartDisplay();\n        document.getElementById('cartCount').classList.add('animate');\n        setTimeout(() => {\n          document.getElementById('cartCount').classList.remove('animate');\n        }, 600);\n      }, 500);\n\n      // Trigger the cart icon animation\n      setTimeout(() => {\n        triggerCartAnimation();\n      }, 700);\n    }"
+      },
+      {
+        "path": "index3.html",
+        "name": "proceedToCheckout",
+        "kind": "Function",
+        "start_line": 2669,
+        "end_line": 2680,
+        "score": 0.090734,
+        "content": "function proceedToCheckout() {\n  if (cartItems.length === 0) {\n    alert('Your cart is empty!');\n    return;\n  }\n  // Calculate total\n  const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);\n  // Save total to localStorage\n  localStorage.setItem('quickCartTotal', total.toFixed(2));\n  // Redirect to payment page\n  window.location.href = 'index14.html';\n}"
+      },
+      {
+        "path": "index8.html",
+        "name": "removeItem",
+        "kind": "Function",
+        "start_line": 250,
+        "end_line": 254,
+        "score": 0.08292,
+        "content": "    function removeItem(btn) {\n      const item = btn.closest('.cart-item');\n      item.parentNode.removeChild(item);\n      updateTotal();\n    }"
+      },
+      {
+        "path": "index3.html",
+        "name": "renderCartDropdown",
+        "kind": "Function",
+        "start_line": 2595,
+        "end_line": 2642,
+        "score": 0.069263,
+        "content": "    function renderCartDropdown() {\n      const cartItemsList = document.getElementById('cartItemsList');\n      const cartDropdownFooter = document.getElementById('cartDropdownFooter');\n      \n      if (cartItems.length === 0) {\n        cartItemsList.innerHTML = `\n          <div class=\"empty-cart\">\n            <i class='bx bx-cart'></i>\n            <p>Your cart is empty</p>\n          </div>\n        `;\n        cartDropdownFooter.style.display = 'none';\n        return;\n      }\n\n      cartDropdownFooter.style.display = 'block';\n      \n      let cartHTML = '';\n      let total = 0;\n      \n      cartItems.forEach((item, index) => {\n        const itemTotal = item.price * item.quantity;\n        total += itemTotal;\n        \n        // ...inside renderCartDropdown()...\ncartHTML += `\n  <div class=\"cart-item\">\n    <img src=\"${item.image}\" alt=\"${item.name}\" class=\"cart-item-image\">\n    <div class=\"cart-item-details\">\n      <div class=\"cart-item-name\">${item.name}</div>\n      <div class=\"cart-item-price\">₹${item.price.toFixed(2)}</div>\n    </div>\n    <div class=\"cart-item-controls\">\n      <button class=\"qty-btn\" onclick=\"updateQuantity(${index}, -1)\">-</button>\n      <span class=\"qty-display\">${item.quantity}</span>\n      <button class=\"qty-btn\" onclick=\"updateQuantity(${index}, 1)\">+</button>\n      <button class=\"remove-btn\" onclick=\"removeCartItem(${index})\">Remove</button>\n    </div>\n  </div>\n`;\n\ndocument.getElementById('cartTotalAmount').textContent = `₹${total.toFixed(2)}`;\n// ...existing code...\n      });\n      \n      cartItemsList.innerHTML = cartHTML;\n      document.getElementById('cartTotalAmount').textContent = `₹${total.toFixed(2)}`;\n    }"
+      },
+      {
+        "path": "index8.html",
+        "name": "updateTotal",
+        "kind": "Function",
+        "start_line": 241,
+        "end_line": 249,
+        "score": 0.065848,
+        "content": "    function updateTotal() {\n      let total = 0;\n      document.querySelectorAll('.cart-item').forEach(item => {\n        const price = parseInt(item.getAttribute('data-price'));\n        const qty = parseInt(item.querySelector('.cart-qty-input').value);\n        total += price * qty;\n      });\n      document.getElementById('cartTotal').textContent = '₹' + total.toLocaleString();\n    }"
+      },
+      {
+        "path": "index8.html",
+        "name": "updateSubtotal",
+        "kind": "Function",
+        "start_line": 233,
+        "end_line": 240,
+        "score": 0.062192,
+        "content": "    function updateSubtotal(input) {\n      const item = input.closest('.cart-item');\n      const price = parseInt(item.getAttribute('data-price'));\n      const qty = parseInt(input.value);\n      const subtotal = price * qty;\n      item.querySelector('.cart-subtotal').textContent = 'Subtotal: ₹' + subtotal.toLocaleString();\n      updateTotal();\n    }"
+      },
+      {
+        "path": "index3.html",
+        "name": "triggerCartAnimation",
+        "kind": "Function",
+        "start_line": 2559,
+        "end_line": 2580,
+        "score": 0.061821,
+        "content": "    function triggerCartAnimation() {\n      const cartIcon = document.getElementById('cartIcon');\n      const cartCountElement = document.getElementById('cartCount');\n      \n      // Reset animations\n      cartIcon.classList.remove('cart-icon-animate');\n      cartCountElement.classList.remove('cart-count-pop');\n      \n      // Trigger reflow\n      void cartIcon.offsetWidth;\n      void cartCountElement.offsetWidth;\n      \n      // Add animations\n      cartIcon.classList.add('cart-icon-animate');\n      cartCountElement.classList.add('cart-count-pop');\n      \n      // Remove classes after animation\n      setTimeout(() => {\n        cartIcon.classList.remove('cart-icon-animate');\n        cartCountElement.classList.remove('cart-count-pop');\n      }, 600);\n    }"
+      },
+      {
+        "path": "index11.html",
+        "name": "openPortfolio",
+        "kind": "Function",
+        "start_line": 540,
+        "end_line": 542,
+        "score": 0.055737,
+        "content": "        function openPortfolio(memberName) {\n            alert(`Opening ${memberName}'s portfolio...\\n(In a real application, this would redirect to their portfolio page)`);\n        }"
+      }
+    ],
+    "investigation": {
+      "findings": [
+        "[E1] Retrieved Function `addToCart` at index3.html:2683-2721 (similarity 0.1386).",
+        "[E2] Retrieved Function `proceedToCheckout` at index3.html:2669-2680 (similarity 0.0907).",
+        "[E3] Retrieved Function `removeItem` at index8.html:250-254 (similarity 0.0829).",
+        "[E4] Retrieved Function `renderCartDropdown` at index3.html:2595-2642 (similarity 0.0693).",
+        "[E5] Retrieved Function `updateTotal` at index8.html:241-249 (similarity 0.0658).",
+        "[E6] Retrieved Function `updateSubtotal` at index8.html:233-240 (similarity 0.0622).",
+        "[E7] Retrieved Function `triggerCartAnimation` at index3.html:2559-2580 (similarity 0.0618).",
+        "[E8] Retrieved Function `openPortfolio` at index11.html:540-542 (similarity 0.0557)."
+      ],
+      "hypotheses": [
+        "[E1] `addToCart` may be relevant because its name or source overlaps the issue; inspect its behavior and related tests.",
+        "[E2] `proceedToCheckout` may be relevant because its name or source overlaps the issue; inspect its behavior and related tests.",
+        "[E3] `removeItem` may be relevant because its name or source overlaps the issue; inspect its behavior and related tests."
+      ],
+      "uncertainties": [
+        "Similarity does not establish causality; verify behavior with targeted tests."
+      ],
+      "evidence_references": {
+        "[E1] `addToCart` may be relevant because its name or source overlaps the issue; inspect its behavior and related tests.": [
+          "E1"
+        ],
+        "[E2] `proceedToCheckout` may be relevant because its name or source overlaps the issue; inspect its behavior and related tests.": [
+          "E2"
+        ],
+        "[E3] `removeItem` may be relevant because its name or source overlaps the issue; inspect its behavior and related tests.": [
+          "E3"
+        ]
+      },
+      "source": "heuristic"
+    },
+    "candidate_patch": null,
+    "test_result": {},
+    "review": {},
+    "repair_attempts": [],
+    "limitations": [
+      "Retrieval uses lexical overlap; semantic embeddings and reranking are not configured.",
+      "A candidate patch is not evidence that the bug is fixed."
+    ]
+  },
+  {
+    "status": "analysis_complete",
+    "issue": "Each legal delivery should increment the over by exactly one ball. Find the scoring logic and show whether the current code adds one ball per delivery.",
+    "analysis": {
+      "summary": "Each legal delivery should increment the over by exactly one ball. Find the scoring logic and show whether the current code adds one ball per delivery.",
+      "keywords": [
+        "ball",
+        "delivery",
+        "one",
+        "adds",
+        "code",
+        "current",
+        "exactly",
+        "find",
+        "increment",
+        "legal",
+        "logic",
+        "per"
+      ],
+      "issue_type": "behavior",
+      "component_hints": [],
+      "retrieval_method": "tfidf_cosine",
+      "score_metric": "cosine_similarity",
+      "repository_source": "Public GitHub archive",
+      "repository_name": "Kanduriavinash/cricket-scorer-pro",
+      "repository_url": "https://github.com/Kanduriavinash/cricket-scorer-pro",
+      "repository_default_branch": "main",
+      "repository_commit_sha": "cc6718815f32901c17d22f01aef28d38b03c91d4",
+      "repository_archive_sha256": "5e769f34048c3bb614425ffa6592ddb03cbcf509efe603118be5db59b2260ace",
+      "repository_pushed_at": "2026-11-15T11:46:06Z",
+      "repository_skipped_symlinks": 0
+    },
+    "plan": [
+      "Inspect the bug report and its extracted issue features.",
+      "Index supported source functions and classes without executing repository files.",
+      "Retrieve source evidence matching the issue terms and component hints.",
+      "Compare candidate source behavior with the reported symptom and identify tests.",
+      "Propose a minimal diff only when evidence is sufficient, then verify it in isolation."
+    ],
+    "evidence": [
+      {
+        "path": "script.js",
+        "name": "confirmEditPlayer",
+        "kind": "Function",
+        "start_line": 1595,
+        "end_line": 1702,
+        "score": 0.087848,
+        "content": "function confirmEditPlayer() {\n    const reassignName = document.getElementById(\"editPlayerReassignSelect\").value;\n    let renameName = document.getElementById(\"editPlayerRenameInput\").value.trim();\n    const isTwoSiderChecked = document.getElementById(\"editPlayerTwoSiderCheckbox\").checked;\n    \n    if (!renameName) {\n        alert(\"Player name cannot be empty.\");\n        return;\n    }\n    \n    let currentName = \"\";\n    if (editRole === \"striker\") currentName = matchState.strikerName;\n    else if (editRole === \"nonStriker\") currentName = matchState.nonStrikerName;\n    else if (editRole === \"bowler\") currentName = matchState.currentBowlerName;\n    \n    pushHistory();\n    let changed = false;\n    \n    // Rename current player\n    if (renameName !== currentName) {\n        renamePlayer(currentName, renameName);\n        currentName = renameName; // Update local tracker\n        changed = true;\n    }\n    \n    // Handle Two-Sider checkbox logic\n    const wasTwoSider = matchState.stats[currentName] && matchState.stats[currentName].isTwoSider || false;\n    if (isTwoSiderChecked !== wasTwoSider) {\n        if (isTwoSiderChecked) {\n            // Find which team the player belongs to\n            const inT1 = matchState.team1Squad.includes(currentName);\n            const inT2 = matchState.team2Squad.includes(currentName);\n            \n            let baseName = currentName.replace(\" (T1)\", \"\").replace(\" (T2)\", \"\");\n            let t1Name = baseName + \" (T1)\";\n            let t2Name = baseName + \" (T2)\";\n            \n            if (inT1 && !currentName.includes(\"(T1)\")) {\n                renamePlayer(currentName, t1Name);\n                currentName = t1Name;\n            } else if (inT2 && !currentName.includes(\"(T2)\")) {\n                renamePlayer(currentName, t2Name);\n                currentName = t2Name;\n            }\n            \n            // Mark as two-sider\n            matchState.stats[currentName].isTwoSider = true;\n            \n            // Add to the other team's squad list as well!\n            if (inT1) {\n                if (!matchState.team2Squad.includes(t2Name)) {\n                    matchState.team2Squad.push(t2Name);\n                    // Initialize stats for the other team's version\n                    matchState.stats[t2Name] = {\n                        batting: { runs: 0, balls: 0, fours: 0, sixes: 0, dismissal: \"yet to bat\" },\n                        bowling: { balls: 0, maidens: 0, runs: 0, wickets: 0 },\n                        isTwoSider: true\n                    };\n                }\n            } else if (inT2) {\n                if (!matchState.team1Squad.includes(t1Name)) {\n                    matchState.team1Squad.push(t1Name);\n                    // Initialize stats\n                    matchState.stats[t1Name] = {\n                        batting: { runs: 0, balls: 0, fours: 0, sixes: 0, dismissal: \"yet to bat\" },\n                        bowling: { balls: 0, maidens: 0, runs: 0, wickets: 0 },\n                        isTwoSider: true\n                    };\n                }\n            }\n            \n            alert(`Player \"${baseName}\" is now a Two-Sider!\\nWe added \"${t1Name}\" to ${matchState.team1Name} and \"${t2Name}\" to ${matchState.team2Name} to track their stats separately in each innings.`);\n        } else {\n            // Uncheck: just set the flag to false\n            if (matchState.stats[currentName]) {\n                matchState.stats[currentName].isTwoSider = false;\n            }\n        }\n        changed = true;\n    }\n    \n    // Reassign crease position\n    if (reassignName && reassignName !== currentName) {\n        if (editRole === \"striker\") {\n            matchState.strikerName = reassignName;\n            matchState.stats[reassignName].batting.dismissal = \"not out\";\n            if (!matchState.battingOrder[matchState.innings].includes(reassignName)) {\n                matchState.battingOrder[matchState.innings].push(reassignName);\n            }\n        } else if (editRole === \"nonStriker\") {\n            matchState.nonStrikerName = reassignName;\n            matchState.stats[reassignName].batting.dismissal = \"not out\";\n            if (!matchState.battingOrder[matchState.innings].includes(reassignName)) {\n                matchState.battingOrder[matchState.innings].push(reassignName);\n            }\n        } else if (editRole === \"bowler\") {\n            matchState.currentBowlerName = reassignName;\n        }\n        changed = true;\n    }\n    \n    if (changed) {\n        saveState();\n        updateUI();\n    }\n    \n    closeEditPlayerModal();\n}"
+      },
+      {
+        "path": "_cricket_score_board_backup/script.js",
+        "name": "confirmEditPlayer",
+        "kind": "Function",
+        "start_line": 1595,
+        "end_line": 1702,
+        "score": 0.087781,
+        "content": "function confirmEditPlayer() {\n    const reassignName = document.getElementById(\"editPlayerReassignSelect\").value;\n    let renameName = document.getElementById(\"editPlayerRenameInput\").value.trim();\n    const isTwoSiderChecked = document.getElementById(\"editPlayerTwoSiderCheckbox\").checked;\n    \n    if (!renameName) {\n        alert(\"Player name cannot be empty.\");\n        return;\n    }\n    \n    let currentName = \"\";\n    if (editRole === \"striker\") currentName = matchState.strikerName;\n    else if (editRole === \"nonStriker\") currentName = matchState.nonStrikerName;\n    else if (editRole === \"bowler\") currentName = matchState.currentBowlerName;\n    \n    pushHistory();\n    let changed = false;\n    \n    // Rename current player\n    if (renameName !== currentName) {\n        renamePlayer(currentName, renameName);\n        currentName = renameName; // Update local tracker\n        changed = true;\n    }\n    \n    // Handle Two-Sider checkbox logic\n    const wasTwoSider = matchState.stats[currentName] && matchState.stats[currentName].isTwoSider || false;\n    if (isTwoSiderChecked !== wasTwoSider) {\n        if (isTwoSiderChecked) {\n            // Find which team the player belongs to\n            const inT1 = matchState.team1Squad.includes(currentName);\n            const inT2 = matchState.team2Squad.includes(currentName);\n            \n            let baseName = currentName.replace(\" (T1)\", \"\").replace(\" (T2)\", \"\");\n            let t1Name = baseName + \" (T1)\";\n            let t2Name = baseName + \" (T2)\";\n            \n            if (inT1 && !currentName.includes(\"(T1)\")) {\n                renamePlayer(currentName, t1Name);\n                currentName = t1Name;\n            } else if (inT2 && !currentName.includes(\"(T2)\")) {\n                renamePlayer(currentName, t2Name);\n                currentName = t2Name;\n            }\n            \n            // Mark as two-sider\n            matchState.stats[currentName].isTwoSider = true;\n            \n            // Add to the other team's squad list as well!\n            if (inT1) {\n                if (!matchState.team2Squad.includes(t2Name)) {\n                    matchState.team2Squad.push(t2Name);\n                    // Initialize stats for the other team's version\n                    matchState.stats[t2Name] = {\n                        batting: { runs: 0, balls: 0, fours: 0, sixes: 0, dismissal: \"yet to bat\" },\n                        bowling: { balls: 0, maidens: 0, runs: 0, wickets: 0 },\n                        isTwoSider: true\n                    };\n                }\n            } else if (inT2) {\n                if (!matchState.team1Squad.includes(t1Name)) {\n                    matchState.team1Squad.push(t1Name);\n                    // Initialize stats\n                    matchState.stats[t1Name] = {\n                        batting: { runs: 0, balls: 0, fours: 0, sixes: 0, dismissal: \"yet to bat\" },\n                        bowling: { balls: 0, maidens: 0, runs: 0, wickets: 0 },\n                        isTwoSider: true\n                    };\n                }\n            }\n            \n            alert(`Player \"${baseName}\" is now a Two-Sider!\\nWe added \"${t1Name}\" to ${matchState.team1Name} and \"${t2Name}\" to ${matchState.team2Name} to track their stats separately in each innings.`);\n        } else {\n            // Uncheck: just set the flag to false\n            if (matchState.stats[currentName]) {\n                matchState.stats[currentName].isTwoSider = false;\n            }\n        }\n        changed = true;\n    }\n    \n    // Reassign crease position\n    if (reassignName && reassignName !== currentName) {\n        if (editRole === \"striker\") {\n            matchState.strikerName = reassignName;\n            matchState.stats[reassignName].batting.dismissal = \"not out\";\n            if (!matchState.battingOrder[matchState.innings].includes(reassignName)) {\n                matchState.battingOrder[matchState.innings].push(reassignName);\n            }\n        } else if (editRole === \"nonStriker\") {\n            matchState.nonStrikerName = reassignName;\n            matchState.stats[reassignName].batting.dismissal = \"not out\";\n            if (!matchState.battingOrder[matchState.innings].includes(reassignName)) {\n                matchState.battingOrder[matchState.innings].push(reassignName);\n            }\n        } else if (editRole === \"bowler\") {\n            matchState.currentBowlerName = reassignName;\n        }\n        changed = true;\n    }\n    \n    if (changed) {\n        saveState();\n        updateUI();\n    }\n    \n    closeEditPlayerModal();\n}"
+      },
+      {
+        "path": "script.js",
+        "name": "addRun",
+        "kind": "Function",
+        "start_line": 437,
+        "end_line": 492,
+        "score": 0.078087,
+        "content": "function addRun(run) {\n    if (matchState.status !== \"live\") return;\n    \n    pushHistory();\n    \n    // Clear Free Hit status after a legal delivery is played\n    let freeHitWasActive = false;\n    if (matchState.freeHitActive) {\n        freeHitWasActive = true;\n        matchState.freeHitActive = false;\n    }\n    \n    // Update Score\n    matchState.score += run;\n    matchState.balls++;\n    \n    // Update Striker Batting Stats\n    let bat = matchState.stats[matchState.strikerName].batting;\n    bat.runs += run;\n    bat.balls++;\n    if (run === 4) {\n        bat.fours++;\n        triggerCelebration(4);\n    }\n    if (run === 6) {\n        bat.sixes++;\n        triggerCelebration(6);\n    }\n    \n    // Update Bowler Stats\n    let bowl = matchState.stats[matchState.currentBowlerName].bowling;\n    bowl.runs += run;\n    bowl.balls++;\n    \n    // Save striker name before potentially swapping strike\n    let strikerBefore = matchState.strikerName;\n    \n    // Record ball in current over\n    matchState.currentOver.push(run.toString());\n    \n    // Timeline entry\n    const overNum = formatOvers(matchState.balls - 1);\n    const freeHitSuffix = freeHitWasActive ? \" (Free Hit)\" : \"\";\n    addTimelineItem(\n        run.toString(), \n        `${matchState.currentBowlerName} to ${strikerBefore}${freeHitSuffix}`, \n        `${run === 4 ? \"FOUR! \" : run === 6 ? \"SIX! \" : \"\"}${run} run(s) scored.`\n    );\n    \n    // Swap strike on odd runs\n    if (run % 2 !== 0) {\n        swapStrikerEnd();\n    }\n    \n    checkInningsOrOverEnd();\n}"
+      },
+      {
+        "path": "_cricket_score_board_backup/script.js",
+        "name": "addRun",
+        "kind": "Function",
+        "start_line": 437,
+        "end_line": 492,
+        "score": 0.077919,
+        "content": "function addRun(run) {\n    if (matchState.status !== \"live\") return;\n    \n    pushHistory();\n    \n    // Clear Free Hit status after a legal delivery is played\n    let freeHitWasActive = false;\n    if (matchState.freeHitActive) {\n        freeHitWasActive = true;\n        matchState.freeHitActive = false;\n    }\n    \n    // Update Score\n    matchState.score += run;\n    matchState.balls++;\n    \n    // Update Striker Batting Stats\n    let bat = matchState.stats[matchState.strikerName].batting;\n    bat.runs += run;\n    bat.balls++;\n    if (run === 4) {\n        bat.fours++;\n        triggerCelebration(4);\n    }\n    if (run === 6) {\n        bat.sixes++;\n        triggerCelebration(6);\n    }\n    \n    // Update Bowler Stats\n    let bowl = matchState.stats[matchState.currentBowlerName].bowling;\n    bowl.runs += run;\n    bowl.balls++;\n    \n    // Save striker name before potentially swapping strike\n    let strikerBefore = matchState.strikerName;\n    \n    // Record ball in current over\n    matchState.currentOver.push(run.toString());\n    \n    // Timeline entry\n    const overNum = formatOvers(matchState.balls - 1);\n    const freeHitSuffix = freeHitWasActive ? \" (Free Hit)\" : \"\";\n    addTimelineItem(\n        run.toString(), \n        `${matchState.currentBowlerName} to ${strikerBefore}${freeHitSuffix}`, \n        `${run === 4 ? \"FOUR! \" : run === 6 ? \"SIX! \" : \"\"}${run} run(s) scored.`\n    );\n    \n    // Swap strike on odd runs\n    if (run % 2 !== 0) {\n        swapStrikerEnd();\n    }\n    \n    checkInningsOrOverEnd();\n}"
+      },
+      {
+        "path": "script.js",
+        "name": "checkInningsOrOverEnd",
+        "kind": "Function",
+        "start_line": 871,
+        "end_line": 912,
+        "score": 0.076693,
+        "content": "function checkInningsOrOverEnd() {\n    let limitBalls = matchState.oversLimit * 6;\n    let battingSquad = matchState.battingTeam === 1 ? matchState.team1Squad : matchState.team2Squad;\n    \n    // 1. Check if Target is chased in Innings 2\n    if (matchState.innings === 2) {\n        let target = matchState.innings1Score + 1;\n        if (matchState.score >= target) {\n            let winText = `${matchState.battingTeam === 1 ? matchState.team1Name : matchState.team2Name} wins by ${battingSquad.length - 1 - matchState.wickets} wickets!`;\n            endMatch(winText);\n            return;\n        }\n    }\n    \n    // 2. Check if all out\n    if (matchState.wickets >= battingSquad.length - 1) {\n        handleInningsEnd(\"All Out\");\n        return;\n    }\n    \n    // 3. Check if overs completed\n    if (matchState.balls >= limitBalls) {\n        handleInningsEnd(\"Overs Completed\");\n        return;\n    }\n    \n    // 4. Check if over completed (6 legal balls)\n    let legalBallsInOver = matchState.currentOver.filter(ball => {\n        if (matchState.nbCountsAsLegal) {\n            return !ball.includes(\"Wd\"); // Nb is counted as a legal ball\n        } else {\n            return !ball.includes(\"Wd\") && !ball.includes(\"Nb\"); // Nb is not legal (rebowl)\n        }\n    }).length;\n    \n    if (legalBallsInOver === 6) {\n        handleOverEnd();\n    } else {\n        saveState();\n        updateUI();\n    }\n}"
+      },
+      {
+        "path": "_cricket_score_board_backup/script.js",
+        "name": "checkInningsOrOverEnd",
+        "kind": "Function",
+        "start_line": 871,
+        "end_line": 912,
+        "score": 0.076491,
+        "content": "function checkInningsOrOverEnd() {\n    let limitBalls = matchState.oversLimit * 6;\n    let battingSquad = matchState.battingTeam === 1 ? matchState.team1Squad : matchState.team2Squad;\n    \n    // 1. Check if Target is chased in Innings 2\n    if (matchState.innings === 2) {\n        let target = matchState.innings1Score + 1;\n        if (matchState.score >= target) {\n            let winText = `${matchState.battingTeam === 1 ? matchState.team1Name : matchState.team2Name} wins by ${battingSquad.length - 1 - matchState.wickets} wickets!`;\n            endMatch(winText);\n            return;\n        }\n    }\n    \n    // 2. Check if all out\n    if (matchState.wickets >= battingSquad.length - 1) {\n        handleInningsEnd(\"All Out\");\n        return;\n    }\n    \n    // 3. Check if overs completed\n    if (matchState.balls >= limitBalls) {\n        handleInningsEnd(\"Overs Completed\");\n        return;\n    }\n    \n    // 4. Check if over completed (6 legal balls)\n    let legalBallsInOver = matchState.currentOver.filter(ball => {\n        if (matchState.nbCountsAsLegal) {\n            return !ball.includes(\"Wd\"); // Nb is counted as a legal ball\n        } else {\n            return !ball.includes(\"Wd\") && !ball.includes(\"Nb\"); // Nb is not legal (rebowl)\n        }\n    }).length;\n    \n    if (legalBallsInOver === 6) {\n        handleOverEnd();\n    } else {\n        saveState();\n        updateUI();\n    }\n}"
+      },
+      {
+        "path": "script.js",
+        "name": "renderCurrentOverBalls",
+        "kind": "Function",
+        "start_line": 1199,
+        "end_line": 1227,
+        "score": 0.075934,
+        "content": "function renderCurrentOverBalls() {\n    const list = document.getElementById(\"currentOver\");\n    list.innerHTML = \"\";\n    \n    if (matchState.currentOver.length === 0) {\n        list.innerHTML = `<span class=\"text-muted\" style=\"font-size: 0.95rem;\">Waiting for first delivery...</span>`;\n        return;\n    }\n    \n    matchState.currentOver.forEach(ball => {\n        const bubble = document.createElement(\"span\");\n        bubble.className = \"ball-circle\";\n        \n        if (ball === \"0\") {\n            bubble.classList.add(\"dot\");\n        } else if (ball === \"4\") {\n            bubble.classList.add(\"four\");\n        } else if (ball === \"6\") {\n            bubble.classList.add(\"six\");\n        } else if (ball === \"W\") {\n            bubble.classList.add(\"wicket\");\n        } else if (ball.includes(\"Wd\") || ball.includes(\"Nb\")) {\n            bubble.classList.add(\"extra\");\n        }\n        \n        bubble.innerText = ball;\n        list.appendChild(bubble);\n    });\n}"
+      },
+      {
+        "path": "script.js",
+        "name": "handleOverEnd",
+        "kind": "Function",
+        "start_line": 914,
+        "end_line": 945,
+        "score": 0.075726,
+        "content": "function handleOverEnd() {\n    // Check for Maiden Over\n    // We check runs conceded in the current over\n    let runsConceded = 0;\n    matchState.currentOver.forEach(ball => {\n        if (ball.includes(\"Wd\")) {\n            runsConceded += parseInt(ball) || 1;\n        } else if (ball.includes(\"Nb\")) {\n            runsConceded += parseInt(ball) || 1;\n        } else if (ball === \"W\") {\n            // 0 runs\n        } else if (ball.includes(\"B\") || ball.includes(\"Lb\")) {\n            // Byes/Leg byes do not count towards bowler runs\n        } else {\n            runsConceded += parseInt(ball) || 0;\n        }\n    });\n    \n    if (runsConceded === 0) {\n        matchState.stats[matchState.currentBowlerName].bowling.maidens++;\n    }\n    \n    // Save previous bowler\n    matchState.lastBowlerName = matchState.currentBowlerName;\n    matchState.currentOver = [];\n    \n    // Swap batsman strike\n    swapStrikerEnd();\n    \n    // Show bowler selection modal\n    openBowlerModal();\n}"
+      }
+    ],
+    "investigation": {
+      "findings": [
+        "[E1] Retrieved Function `confirmEditPlayer` at script.js:1595-1702 (similarity 0.0878).",
+        "[E2] Retrieved Function `confirmEditPlayer` at _cricket_score_board_backup/script.js:1595-1702 (similarity 0.0878).",
+        "[E3] Retrieved Function `addRun` at script.js:437-492 (similarity 0.0781).",
+        "[E4] Retrieved Function `addRun` at _cricket_score_board_backup/script.js:437-492 (similarity 0.0779).",
+        "[E5] Retrieved Function `checkInningsOrOverEnd` at script.js:871-912 (similarity 0.0767).",
+        "[E6] Retrieved Function `checkInningsOrOverEnd` at _cricket_score_board_backup/script.js:871-912 (similarity 0.0765).",
+        "[E7] Retrieved Function `renderCurrentOverBalls` at script.js:1199-1227 (similarity 0.0759).",
+        "[E8] Retrieved Function `handleOverEnd` at script.js:914-945 (similarity 0.0757)."
+      ],
+      "hypotheses": [
+        "[E1] `confirmEditPlayer` may be relevant because its name or source overlaps the issue; inspect its behavior and related tests.",
+        "[E2] `confirmEditPlayer` may be relevant because its name or source overlaps the issue; inspect its behavior and related tests.",
+        "[E3] `addRun` may be relevant because its name or source overlaps the issue; inspect its behavior and related tests."
+      ],
+      "uncertainties": [
+        "Similarity does not establish causality; verify behavior with targeted tests."
+      ],
+      "evidence_references": {
+        "[E1] `confirmEditPlayer` may be relevant because its name or source overlaps the issue; inspect its behavior and related tests.": [
+          "E1"
+        ],
+        "[E2] `confirmEditPlayer` may be relevant because its name or source overlaps the issue; inspect its behavior and related tests.": [
+          "E2"
+        ],
+        "[E3] `addRun` may be relevant because its name or source overlaps the issue; inspect its behavior and related tests.": [
+          "E3"
+        ]
+      },
+      "source": "heuristic"
+    },
+    "candidate_patch": null,
+    "test_result": {},
+    "review": {},
+    "repair_attempts": [],
+    "limitations": [
+      "Retrieval uses lexical overlap; semantic embeddings and reranking are not configured.",
+      "A candidate patch is not evidence that the bug is fixed."
+    ]
+  }
+]

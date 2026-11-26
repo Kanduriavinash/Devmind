@@ -1,0 +1,27 @@
+{
+  "command": [
+    "C:\\TECH\\S5\\TEXT ANALYTICS\\PROJECT\\.venv\\Scripts\\python.exe",
+    "-m",
+    "devmind.retrieval_evaluation",
+    "--inputs",
+    "datasets/evaluation_inputs.csv",
+    "--labels",
+    "datasets/retrieval_ground_truth.csv",
+    "--output",
+    "evaluation/raw_runs/swebench_lite_dev_pilot_20261117_corrected.jsonl",
+    "--top-k",
+    "5"
+  ],
+  "exit_code": 0,
+  "started_at_utc": "2026-11-16T20:36:46.905991+00:00",
+  "elapsed_seconds": 5.4912,
+  "peak_process_tree_rss_bytes_sampled": 215179264,
+  "peak_process_tree_rss_mib_sampled": 205.21,
+  "sampling_interval_seconds": 0.025,
+  "process_memory_samples": 328,
+  "inputs_sha256": "7ca572d028bae16b4b7c1e6b5416a617f1a92283eb2f8a934e069d96c1e1e807",
+  "labels_sha256": "08ad7ed21fb66b28087a7e8826a40f2704d50081567230f5d1982f5bf981a43b",
+  "stdout": "Wrote retrieval records to evaluation\\raw_runs\\swebench_lite_dev_pilot_20261117_corrected.jsonl",
+  "stderr": "C:\\TECH\\S5\\TEXT ANALYTICS\\PROJECT\\.devmind\\retrieval-pilot\\pvlib__pvlib-python-1072\\versioneer.py:485: SyntaxWarning: invalid escape sequence '\\s'\n  LONG_VERSION_PY['git'] = '''",
+  "measurement_note": "Peak Windows process-tree resident set sampled with psutil every 25ms; brief peaks may be missed. No target repository code was executed."
+}

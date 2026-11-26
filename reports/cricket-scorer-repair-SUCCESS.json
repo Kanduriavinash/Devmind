@@ -1,0 +1,105 @@
+{
+  "status": "tests_passed_review_required",
+  "issue": "In script.js addRun, change matchState.balls += 2; to matchState.balls += 1; so that each legal delivery adds one ball.",
+  "analysis": {
+    "summary": "In script.js addRun, change matchState.balls += 2; to matchState.balls += 1; so that each legal delivery adds one ball.",
+    "keywords": [
+      "matchstate.balls",
+      "addrun",
+      "adds",
+      "ball.",
+      "change",
+      "delivery",
+      "each",
+      "in",
+      "legal",
+      "one",
+      "script.js",
+      "so"
+    ],
+    "issue_type": "performance",
+    "component_hints": [
+      "ball.",
+      "matchState.balls",
+      "script.js"
+    ],
+    "retrieval_method": "tfidf_cosine",
+    "score_metric": "cosine_similarity"
+  },
+  "plan": [
+    "Inspect the bug report and its extracted issue features.",
+    "Prioritize the reported component hint(s): ball., matchState.balls, script.js",
+    "Index supported source functions and classes without executing repository files.",
+    "Retrieve source evidence matching the issue terms and component hints.",
+    "Compare candidate source behavior with the reported symptom and identify tests."
+  ],
+  "evidence": [
+    {
+      "path": "script.js",
+      "name": "addRun",
+      "kind": "Function",
+      "start_line": 437,
+      "end_line": 492,
+      "score": 0.195248,
+      "content": "function addRun(run) {\n    if (matchState.status !== \"live\") return;\n    \n    pushHistory();\n    \n    // Clear Free Hit status after a legal delivery is played\n    let freeHitWasActive = false;\n    if (matchState.freeHitActive) {\n        freeHitWasActive = true;\n        matchState.freeHitActive = false;\n    }\n    \n    // Update Score\n    matchState.score += run;\n    matchState.balls += 2;\n    \n    // Update Striker Batting Stats\n    let bat = matchState.stats[matchState.strikerName].batting;\n    bat.runs += run;\n    bat.balls++;\n    if (run === 4) {\n        bat.fours++;\n        triggerCelebration(4);\n    }\n    if (run === 6) {\n        bat.sixes++;\n        triggerCelebration(6);\n    }\n    \n    // Update Bowler Stats\n    let bowl = matchState.stats[matchState.currentBowlerName].bowling;\n    bowl.runs += run;\n    bowl.balls++;\n    \n    // Save striker name before potentially swapping strike\n    let strikerBefore = matchState.strikerName;\n    \n    // Record ball in current over\n    matchState.currentOver.push(run.toString());\n    \n    // Timeline entry\n    const overNum = formatOvers(matchState.balls - 1);\n    const freeHitSuffix = freeHitWasActive ? \" (Free Hit)\" : \"\";\n    addTimelineItem(\n        run.toString(), \n        `${matchState.currentBowlerName} to ${strikerBefore}${freeHitSuffix}`, \n        `${run === 4 ? \"FOUR! \" : run === 6 ? \"SIX! \" : \"\"}${run} run(s) scored.`\n    );\n    \n    // Swap strike on odd runs\n    if (run % 2 !== 0) {\n        swapStrikerEnd();\n    }\n    \n    checkInningsOrOverEnd();\n}"
+    }
+  ],
+  "investigation": {
+    "findings": [
+      "[E1] Retrieved Function `addRun` at script.js:437-492 (similarity 0.1952)."
+    ],
+    "hypotheses": [
+      "[E1] `addRun` may be relevant because its name or source overlaps the issue; inspect its behavior and related tests."
+    ],
+    "uncertainties": [
+      "Similarity does not establish causality; verify behavior with targeted tests."
+    ],
+    "evidence_references": {
+      "[E1] `addRun` may be relevant because its name or source overlaps the issue; inspect its behavior and related tests.": [
+        "E1"
+      ]
+    },
+    "source": "heuristic"
+  },
+  "candidate_patch": "diff --git a/script.js b/script.js\n--- a/script.js\n+++ b/script.js\n@@ -448,7 +448,7 @@\n     // Update Score\n     matchState.score += run;\n-    matchState.balls += 2;\n+    matchState.balls += 1;\n     \n     // Update Striker Batting Stats",
+  "test_result": {
+    "executed": true,
+    "passed": true,
+    "timed_out": false,
+    "exit_code": 0,
+    "mode": "candidate_patch",
+    "runner": "node",
+    "stdout": "TAP version 13\n# Subtest: each legal scoring delivery adds exactly one ball\nok 1 - each legal scoring delivery adds exactly one ball\n  ---\n  duration_ms: 13.322105\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 118.650075",
+    "stderr": ""
+  },
+  "review": {
+    "verdict": "tests_passed_review_required",
+    "reason": "Candidate patch tests passed in isolation; human review is still required."
+  },
+  "repair_attempts": [
+    {
+      "attempt": 1,
+      "status": "tests_passed_review_required",
+      "model_request": true,
+      "sandbox_call": true,
+      "test_result": {
+        "executed": true,
+        "passed": true,
+        "timed_out": false,
+        "exit_code": 0,
+        "mode": "candidate_patch",
+        "runner": "node",
+        "stdout": "TAP version 13\n# Subtest: each legal scoring delivery adds exactly one ball\nok 1 - each legal scoring delivery adds exactly one ball\n  ---\n  duration_ms: 13.322105\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 118.650075",
+        "stderr": ""
+      },
+      "review": {
+        "verdict": "tests_passed_review_required",
+        "reason": "Candidate patch tests passed in isolation; human review is still required."
+      }
+    }
+  ],
+  "limitations": [
+    "Retrieval uses lexical overlap; semantic embeddings and reranking are not configured.",
+    "A candidate patch is not evidence that the bug is fixed."
+  ]
+}

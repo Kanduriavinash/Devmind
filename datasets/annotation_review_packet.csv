@@ -1,0 +1,243 @@
+issue_id,repository,base_commit,issue_title,issue_body,base_snapshot_path,annotator_id,review_date,reviewed_file_paths,reviewed_functions,confidence,decision,rationale,uncertainties
+pilot-01,marshmallow-code/marshmallow,2be2d83a1a9a6d3d9b85804f3ab545cecc409bb0,,"[version 2.20.0] TypeError: 'NoneType' object is not subscriptable
+After update from version 2.19.5 to 2.20.0 I got error for code like:
+
+```python
+from marshmallow import Schema, fields, validates
+
+
+class Bar(Schema):
+    value = fields.String()
+
+    @validates('value')  # <- issue here
+    def validate_value(self, value):
+        pass
+
+
+class Foo(Schema):
+    bar = fields.Nested(Bar)
+
+
+sch = Foo()
+
+sch.validate({
+    'bar': 'invalid',
+})
+```
+
+```
+Traceback (most recent call last):
+  File ""/_/bug_mschema.py"", line 19, in <module>
+    'bar': 'invalid',
+  File ""/_/env/lib/python3.7/site-packages/marshmallow/schema.py"", line 628, in validate
+    _, errors = self._do_load(data, many, partial=partial, postprocess=False)
+  File ""/_/env/lib/python3.7/site-packages/marshmallow/schema.py"", line 670, in _do_load
+    index_errors=self.opts.index_errors,
+  File ""/_/env/lib/python3.7/site-packages/marshmallow/marshalling.py"", line 292, in deserialize
+    index=(index if index_errors else None)
+  File ""/_/env/lib/python3.7/site-packages/marshmallow/marshalling.py"", line 65, in call_and_store
+    value = getter_func(data)
+  File ""/_/env/lib/python3.7/site-packages/marshmallow/marshalling.py"", line 285, in <lambda>
+    data
+  File ""/_/env/lib/python3.7/site-packages/marshmallow/fields.py"", line 265, in deserialize
+    output = self._deserialize(value, attr, data)
+  File ""/_/env/lib/python3.7/site-packages/marshmallow/fields.py"", line 465, in _deserialize
+    data, errors = self.schema.load(value)
+  File ""/_/env/lib/python3.7/site-packages/marshmallow/schema.py"", line 588, in load
+    result, errors = self._do_load(data, many, partial=partial, postprocess=True)
+  File ""/_/env/lib/python3.7/site-packages/marshmallow/schema.py"", line 674, in _do_load
+    self._invoke_field_validators(unmarshal, data=result, many=many)
+  File ""/_/env/lib/python3.7/site-packages/marshmallow/schema.py"", line 894, in _invoke_field_validators
+    value = data[field_obj.attribute or field_name]
+TypeError: 'NoneType' object is not subscriptable
+```
+",C:\TECH\S5\TEXT ANALYTICS\PROJECT\.devmind\retrieval-pilot\pilot-01,,,,,,,,
+pilot-02,pvlib/pvlib-python,04a523fafbd61bc2e49420963b84ed8e2bd1b3cf,,"temperature.fuentes errors when given tz-aware inputs on pandas>=1.0.0
+**Describe the bug**
+When the weather timeseries inputs to `temperature.fuentes` have tz-aware index, an internal call to `np.diff(index)` returns an array of `Timedelta` objects instead of an array of nanosecond ints, throwing an error immediately after.  The error only happens when using pandas>=1.0.0; using 0.25.3 runs successfully, but emits the warning:
+
+```
+  /home/kevin/anaconda3/envs/pvlib-dev/lib/python3.7/site-packages/numpy/lib/function_base.py:1243: FutureWarning: Converting timezone-aware DatetimeArray to timezone-naive ndarray with 'datetime64[ns]' dtype. In the future, this will return an ndarray with 'object' dtype where each element is a 'pandas.Timestamp' with the correct 'tz'.
+  	To accept the future behavior, pass 'dtype=object'.
+  	To keep the old behavior, pass 'dtype=""datetime64[ns]""'.
+    a = asanyarray(a)
+```
+
+**To Reproduce**
+```python
+In [1]: import pvlib
+   ...: import pandas as pd
+   ...: 
+   ...: index_naive = pd.date_range('2019-01-01', freq='h', periods=3)
+   ...: 
+   ...: kwargs = {
+   ...:     'poa_global': pd.Series(1000, index_naive),
+   ...:     'temp_air': pd.Series(20, index_naive),
+   ...:     'wind_speed': pd.Series(1, index_naive),
+   ...:     'noct_installed': 45
+   ...: }
+   ...: 
+
+In [2]: print(pvlib.temperature.fuentes(**kwargs))
+2019-01-01 00:00:00    47.85
+2019-01-01 01:00:00    50.85
+2019-01-01 02:00:00    50.85
+Freq: H, Name: tmod, dtype: float64
+
+In [3]: kwargs['poa_global'].index = index_naive.tz_localize('UTC')
+   ...: print(pvlib.temperature.fuentes(**kwargs))
+   ...: 
+Traceback (most recent call last):
+
+  File ""<ipython-input-3-ff99badadc91>"", line 2, in <module>
+    print(pvlib.temperature.fuentes(**kwargs))
+
+  File ""/home/kevin/anaconda3/lib/python3.7/site-packages/pvlib/temperature.py"", line 602, in fuentes
+    timedelta_hours = np.diff(poa_global.index).astype(float) / 1e9 / 60 / 60
+
+TypeError: float() argument must be a string or a number, not 'Timedelta'
+```
+
+**Expected behavior**
+`temperature.fuentes` should work with both tz-naive and tz-aware inputs.
+
+
+**Versions:**
+ - ``pvlib.__version__``: 0.8.0
+ - ``pandas.__version__``: 1.0.0+
+ - python: 3.7.4 (default, Aug 13 2019, 20:35:49) \n[GCC 7.3.0]
+
+
+",C:\TECH\S5\TEXT ANALYTICS\PROJECT\.devmind\retrieval-pilot\pilot-02,,,,,,,,
+pilot-03,pydicom/pydicom,b9fb05c177b685bf683f7f57b2d57374eb7d882d,,"Make PersonName3 iterable
+```python
+from pydicom import Dataset
+
+ds = Dataset()
+ds.PatientName = 'SomeName'
+
+'S' in ds.PatientName
+```
+```
+Traceback (most recent call last):
+  File ""<stdin>"", line 1, in <module>
+TypeError: argument of type 'PersonName3' is not iterable
+```
+
+I'm not really sure if this is intentional or if PN elements should support `str` methods. And yes I know I can `str(ds.PatientName)` but it's a bit silly, especially when I keep having to write exceptions to my element iterators just for PN elements.
+",C:\TECH\S5\TEXT ANALYTICS\PROJECT\.devmind\retrieval-pilot\pilot-03,,,,,,,,
+pilot-04,pylint-dev/astroid,39c2a9805970ca57093d32bbaf0e6a63e05041d8,,"getitem does not infer the actual unpacked value
+When trying to call `Dict.getitem()` on a context where we have a dict unpacking of anything beside a real dict, astroid currently raises an `AttributeError: 'getitem'`, which has 2 problems:
+
+- The object might be a reference against something constant, this pattern is usually seen when we have different sets of dicts that extend each other, and all of their values are inferrable. 
+- We can have something that is uninferable, but in that case instead of an `AttributeError` I think it makes sense to raise the usual `AstroidIndexError` which is supposed to be already handled by the downstream.
+
+
+Here is a short reproducer;
+
+```py
+from astroid import parse
+
+
+source = """"""
+X = {
+    'A': 'B'
+}
+
+Y = {
+    **X
+}
+
+KEY = 'A'
+""""""
+
+tree = parse(source)
+
+first_dict = tree.body[0].value
+second_dict = tree.body[1].value
+key = tree.body[2].value
+
+print(f'{first_dict.getitem(key).value = }')
+print(f'{second_dict.getitem(key).value = }')
+
+
+```
+
+The current output;
+
+```
+ $ python t1.py                                                                                                 3ms
+first_dict.getitem(key).value = 'B'
+Traceback (most recent call last):
+  File ""/home/isidentical/projects/astroid/t1.py"", line 23, in <module>
+    print(f'{second_dict.getitem(key).value = }')
+  File ""/home/isidentical/projects/astroid/astroid/nodes/node_classes.py"", line 2254, in getitem
+    return value.getitem(index, context)
+AttributeError: 'Name' object has no attribute 'getitem'
+```
+
+Expeceted output;
+```
+ $ python t1.py                                                                                                 4ms
+first_dict.getitem(key).value = 'B'
+second_dict.getitem(key).value = 'B'
+
+```
+
+",C:\TECH\S5\TEXT ANALYTICS\PROJECT\.devmind\retrieval-pilot\pilot-04,,,,,,,,
+pilot-05,sqlfluff/sqlfluff,304a197829f98e7425a46d872ada73176137e5ae,,"""Dropped elements in sequence matching"" when doubled semicolon
+## Expected Behaviour
+Frankly, I'm not sure whether it (doubled `;`) should be just ignored or rather some specific rule should be triggered.
+## Observed Behaviour
+```console
+(.venv) ?master ~/prod/_inne/sqlfluff> echo ""select id from tbl;;"" | sqlfluff lint -
+Traceback (most recent call last):
+  File ""/home/adam/prod/_inne/sqlfluff/.venv/bin/sqlfluff"", line 11, in <module>
+    load_entry_point('sqlfluff', 'console_scripts', 'sqlfluff')()
+  File ""/home/adam/prod/_inne/sqlfluff/.venv/lib/python3.9/site-packages/click/core.py"", line 1137, in __call__
+    return self.main(*args, **kwargs)
+  File ""/home/adam/prod/_inne/sqlfluff/.venv/lib/python3.9/site-packages/click/core.py"", line 1062, in main
+    rv = self.invoke(ctx)
+  File ""/home/adam/prod/_inne/sqlfluff/.venv/lib/python3.9/site-packages/click/core.py"", line 1668, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+  File ""/home/adam/prod/_inne/sqlfluff/.venv/lib/python3.9/site-packages/click/core.py"", line 1404, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File ""/home/adam/prod/_inne/sqlfluff/.venv/lib/python3.9/site-packages/click/core.py"", line 763, in invoke
+    return __callback(*args, **kwargs)
+  File ""/home/adam/prod/_inne/sqlfluff/src/sqlfluff/cli/commands.py"", line 347, in lint
+    result = lnt.lint_string_wrapped(sys.stdin.read(), fname=""stdin"")
+  File ""/home/adam/prod/_inne/sqlfluff/src/sqlfluff/core/linter/linter.py"", line 789, in lint_string_wrapped
+    linted_path.add(self.lint_string(string, fname=fname, fix=fix))
+  File ""/home/adam/prod/_inne/sqlfluff/src/sqlfluff/core/linter/linter.py"", line 668, in lint_string
+    parsed = self.parse_string(in_str=in_str, fname=fname, config=config)
+  File ""/home/adam/prod/_inne/sqlfluff/src/sqlfluff/core/linter/linter.py"", line 607, in parse_string
+    return self.parse_rendered(rendered, recurse=recurse)
+  File ""/home/adam/prod/_inne/sqlfluff/src/sqlfluff/core/linter/linter.py"", line 313, in parse_rendered
+    parsed, pvs = cls._parse_tokens(
+  File ""/home/adam/prod/_inne/sqlfluff/src/sqlfluff/core/linter/linter.py"", line 190, in _parse_tokens
+    parsed: Optional[BaseSegment] = parser.parse(
+  File ""/home/adam/prod/_inne/sqlfluff/src/sqlfluff/core/parser/parser.py"", line 32, in parse
+    parsed = root_segment.parse(parse_context=ctx)
+  File ""/home/adam/prod/_inne/sqlfluff/src/sqlfluff/core/parser/segments/base.py"", line 821, in parse
+    check_still_complete(segments, m.matched_segments, m.unmatched_segments)
+  File ""/home/adam/prod/_inne/sqlfluff/src/sqlfluff/core/parser/helpers.py"", line 30, in check_still_complete
+    raise RuntimeError(
+RuntimeError: Dropped elements in sequence matching! 'select id from tbl;;' != ';'
+
+```
+## Steps to Reproduce
+Run 
+```console
+echo ""select id from tbl;;"" | sqlfluff lint -
+```
+## Dialect
+default (ansi)
+## Version
+```
+sqlfluff, version 0.6.6
+Python 3.9.5
+```
+## Configuration
+None
+
+",C:\TECH\S5\TEXT ANALYTICS\PROJECT\.devmind\retrieval-pilot\pilot-05,,,,,,,,

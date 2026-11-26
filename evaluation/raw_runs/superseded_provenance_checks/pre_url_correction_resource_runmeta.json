@@ -1,0 +1,25 @@
+{
+  "command": [
+    "C:\\TECH\\S5\\TEXT ANALYTICS\\PROJECT\\.venv\\Scripts\\python.exe",
+    "-m",
+    "devmind.retrieval_evaluation",
+    "--inputs",
+    "datasets/evaluation_inputs.csv",
+    "--labels",
+    "datasets/retrieval_ground_truth.csv",
+    "--output",
+    "reports/experiments/raw_runs/swebench_lite_dev_pilot_20261117_resource.jsonl",
+    "--top-k",
+    "5"
+  ],
+  "exit_code": 0,
+  "started_at_utc": "2026-11-16T20:31:51.777338+00:00",
+  "elapsed_seconds": 20.5035,
+  "peak_process_tree_rss_bytes_sampled": 229412864,
+  "peak_process_tree_rss_mib_sampled": 218.79,
+  "sampling_interval_seconds": 0.025,
+  "process_memory_samples": 875,
+  "stdout": "Wrote retrieval records to reports\\experiments\\raw_runs\\swebench_lite_dev_pilot_20261117_resource.jsonl",
+  "stderr": "C:\\TECH\\S5\\TEXT ANALYTICS\\PROJECT\\.devmind\\retrieval-pilot\\pvlib__pvlib-python-1072\\versioneer.py:485: SyntaxWarning: invalid escape sequence '\\s'\n  LONG_VERSION_PY['git'] = '''",
+  "measurement_note": "Peak process-tree resident set sampled from Windows with psutil during a repeated retrieval evaluation; sampling can miss brief peaks."
+}

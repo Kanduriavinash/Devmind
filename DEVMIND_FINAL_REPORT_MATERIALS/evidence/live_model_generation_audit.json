@@ -1,0 +1,51 @@
+{
+  "audit_test_name": "live_llm_code_generation_cricket_scorer",
+  "timestamp_start": "2026-11-17T13:49:22.024939",
+  "timestamp_request_sent": "2026-11-17T13:49:22.086184",
+  "timestamp_response_received": "2026-11-17T13:51:22.593047",
+  "latency_seconds": 120.506863,
+  "model_identifier": "qwen3:1.7b",
+  "model_base_url": "http://localhost:11434/v1",
+  "issue_submitted": "In script.js addRun, change matchState.balls += 2; to matchState.balls += 1; so that each legal delivery adds one ball.",
+  "target_repository": "C:\\TECH\\S5\\TEXT ANALYTICS\\PROJECT\\examples\\cricket-scorer-pro-buggy",
+  "analysis_summary": "In script.js addRun, change matchState.balls += 2; to matchState.balls += 1; so that each legal delivery adds one ball.",
+  "keywords": [
+    "adds",
+    "ball",
+    "balls",
+    "change",
+    "delivery",
+    "legal",
+    "match",
+    "matchstate.balls",
+    "one",
+    "state",
+    "add",
+    "addrun"
+  ],
+  "retrieved_evidence": [
+    {
+      "path": "script.js",
+      "name": "addRun",
+      "kind": "Function",
+      "start_line": 437,
+      "end_line": 492,
+      "score": 0.208269,
+      "content": "function addRun(run) {\n    if (matchState.status !== \"live\") return;\n    \n    pushHistory();\n    \n    // Clear Free Hit status after a legal delivery is played\n    let freeHitWasActive = false;\n    if (matchState.freeHitActive) {\n        freeHitWasActive = true;\n        matchState.freeHitActive = false;\n    }\n    \n    // Update Score\n    matchState.score += run;\n    matchState.balls += 2;\n    \n    // Update Striker Batting Stats\n    let bat = matchState.stats[matchState.strikerName].batting;\n    bat.runs += run;\n    bat.balls++;\n    if (run === 4) {\n        bat.fours++;\n        triggerCelebration(4);\n    }\n    if (run === 6) {\n        bat.sixes++;\n        triggerCelebration(6);\n    }\n    \n    // Update Bowler Stats\n    let bowl = matchState.stats[matchState.currentBowlerName].bowling;\n    bowl.runs += run;\n    bowl.balls++;\n    \n    // Save striker name before potentially swapping strike\n    let strikerBefore = matchState.strikerName;\n    \n    // Record ball in current over\n    matchState.currentOver.push(run.toString());\n    \n    // Timeline entry\n    const overNum = formatOvers(matchState.balls - 1);\n    const freeHitSuffix = freeHitWasActive ? \" (Free Hit)\" : \"\";\n    addTimelineItem(\n        run.toString(), \n        `${matchState.currentBowlerName} to ${strikerBefore}${freeHitSuffix}`, \n        `${run === 4 ? \"FOUR! \" : run === 6 ? \"SIX! \" : \"\"}${run} run(s) scored.`\n    );\n    \n    // Swap strike on odd runs\n    if (run % 2 !== 0) {\n        swapStrikerEnd();\n    }\n    \n    checkInningsOrOverEnd();\n}"
+    }
+  ],
+  "exact_raw_model_response": "diff --git a/script.js b/script.js\n--- a/script.js\n+++ b/script.js\n@@ -437,7 +437,7 @@\n     matchState.balls += 1;",
+  "parsed_candidate_patch": null,
+  "is_valid_unified_diff": false,
+  "validation_error": "{'valid': False, 'reason': 'No-op patches are not accepted.'}",
+  "changed_files": [],
+  "stages": {
+    "stage_1_bug_description_submitted": true,
+    "stage_2_repository_analysis_completed": true,
+    "stage_3_relevant_source_code_retrieved": true,
+    "stage_4_actual_request_sent_to_llm": true,
+    "stage_5_llm_returned_generated_code": true,
+    "stage_6_parsed_into_unified_diff": false,
+    "stage_7_proposed_changes_displayed": true
+  }
+}

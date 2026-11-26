@@ -1,0 +1,512 @@
+{
+  "study": "Five-repository exploratory dense retrieval comparison against paired lexical baselines",
+  "run_date": "2026-11-17",
+  "dataset": {
+    "name": "SWE-bench/SWE-bench_Lite",
+    "revision": "b0dde1093fe417d83b7184254edf8199c1f0dff5",
+    "split": "dev",
+    "included_instances": 5,
+    "independent_human_reviewed_labels": 0,
+    "annotation_note": "One changed-file proxy per issue, extracted from fixing-patch changed paths; reviewer and confidence are blank. Not exact fault-location ground truth.",
+    "excluded_candidates": [
+      {
+        "repository": "pyvista/pyvista",
+        "reason": "Pinned archive exceeded the DevMind 100 MiB import limit before indexing."
+      }
+    ]
+  },
+  "repositories": [
+    {
+      "evaluation_id": "pilot-01",
+      "repository": "marshmallow-code/marshmallow",
+      "base_commit": "2be2d83a1a9a6d3d9b85804f3ab545cecc409bb0",
+      "base_snapshot_sha256": "ef3246f5237d09b497dcea471a8c3ac2b82e627e6cd3fa1446c12ae291d648c0",
+      "indexed_chunks": 1455,
+      "relevant_path_proxy": "src/marshmallow/schema.py",
+      "label_type": "changed_file_proxy",
+      "reviewer": null,
+      "confidence": null
+    },
+    {
+      "evaluation_id": "pilot-02",
+      "repository": "pvlib/pvlib-python",
+      "base_commit": "04a523fafbd61bc2e49420963b84ed8e2bd1b3cf",
+      "base_snapshot_sha256": "68c9951af9c69d037abcdc6ec2800ffdee735f4ae21e19a1bc51272de5173a5b",
+      "indexed_chunks": 1233,
+      "relevant_path_proxy": "pvlib/temperature.py",
+      "label_type": "changed_file_proxy",
+      "reviewer": null,
+      "confidence": null
+    },
+    {
+      "evaluation_id": "pilot-03",
+      "repository": "pydicom/pydicom",
+      "base_commit": "b9fb05c177b685bf683f7f57b2d57374eb7d882d",
+      "base_snapshot_sha256": "55065620aed3f0c18b5d26612b8ad9de262a04ac7a213508d839cab3048efb0f",
+      "indexed_chunks": 2156,
+      "relevant_path_proxy": "pydicom/valuerep.py",
+      "label_type": "changed_file_proxy",
+      "reviewer": null,
+      "confidence": null
+    },
+    {
+      "evaluation_id": "pilot-04",
+      "repository": "pylint-dev/astroid",
+      "base_commit": "39c2a9805970ca57093d32bbaf0e6a63e05041d8",
+      "base_snapshot_sha256": "af81367b2d99162b04fcb7659bf583aeb86d589487565a8730161f43ce7a7c86",
+      "indexed_chunks": 3162,
+      "relevant_path_proxy": "astroid/nodes/node_classes.py",
+      "label_type": "changed_file_proxy",
+      "reviewer": null,
+      "confidence": null
+    },
+    {
+      "evaluation_id": "pilot-05",
+      "repository": "sqlfluff/sqlfluff",
+      "base_commit": "304a197829f98e7425a46d872ada73176137e5ae",
+      "base_snapshot_sha256": "78cc37316dd845fe1171e9ff2a8c35127f89b621f9c69aec5efe3a309bc3bf13",
+      "indexed_chunks": 1618,
+      "relevant_path_proxy": "src/sqlfluff/core/parser/helpers.py",
+      "label_type": "changed_file_proxy",
+      "reviewer": null,
+      "confidence": null
+    }
+  ],
+  "model": {
+    "name": "sentence-transformers/all-MiniLM-L6-v2",
+    "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "library": "sentence-transformers 5.7.0",
+    "transformers": "4.57.6",
+    "torch": "2.13.0+cpu",
+    "device": "cpu",
+    "dimensions": 384,
+    "faiss_available": false,
+    "model_directory": ".devmind/models/all-MiniLM-L6-v2",
+    "model_directory_sha256": "3c9da5348bc316aa84664e33ac0590590c7fdfe12f2386a0dd513179b8b2393f",
+    "license": "Apache-2.0"
+  },
+  "run": {
+    "exit_code": 0,
+    "records": 100,
+    "completed_records": 100,
+    "methods": [
+      "bm25_okapi",
+      "hybrid_lexical_rrf",
+      "hybrid_lexical_semantic_rrf",
+      "sentence_transformer_cosine",
+      "tfidf_cosine"
+    ],
+    "variants": [
+      "raw",
+      "normalized",
+      "keywords_identifiers",
+      "structured"
+    ],
+    "top_k": 5,
+    "elapsed_seconds": 670.2919,
+    "peak_process_tree_rss_mib_sampled": 932.89,
+    "memory_sampling_interval_seconds": 0.025,
+    "memory_samples": 7901,
+    "model_load_seconds": 14.329032,
+    "dense_document_embedding_and_index_build_seconds_by_repository": {
+      "marshmallow-code/marshmallow": 22.611218,
+      "pvlib/pvlib-python": 32.37403,
+      "pydicom/pydicom": 55.550675,
+      "pylint-dev/astroid": 442.469654,
+      "sqlfluff/sqlfluff": 41.731565
+    },
+    "dense_document_embedding_and_index_build_seconds_total": 594.737142,
+    "dense_document_embedding_and_index_build_seconds_mean": 118.947428,
+    "query_retrieval_latency_seconds": {
+      "tfidf_cosine": {
+        "n": 20,
+        "mean_seconds": 0.036181,
+        "median_seconds": 0.032344,
+        "max_seconds": 0.069634
+      },
+      "sentence_transformer_cosine": {
+        "n": 20,
+        "mean_seconds": 0.062182,
+        "median_seconds": 0.05432,
+        "max_seconds": 0.107866
+      },
+      "hybrid_lexical_semantic_rrf": {
+        "n": 20,
+        "mean_seconds": 0.173775,
+        "median_seconds": 0.139244,
+        "max_seconds": 0.463649
+      }
+    },
+    "timing_limit": "The runner times model initialization, dense index construction (document encoding plus vector preparation), and each retrieval call (query embedding plus search/ranking). Pure model.encode-only inference is not isolated as a separate timer.",
+    "runtime_environment": {
+      "python": "3.12.5",
+      "os": "Windows 11 build 26300",
+      "sentence_transformers": "5.7.0",
+      "transformers": "4.57.6",
+      "torch": "2.13.0+cpu",
+      "numpy": "2.2.2",
+      "torch_threads": 10,
+      "cuda_available": false,
+      "faiss_available": false
+    }
+  },
+  "metrics_mean_over_five_issues": {
+    "raw": {
+      "tfidf_cosine": {
+        "precision_at_1": 0.4,
+        "precision_at_5": 0.16,
+        "recall_at_5": 0.8,
+        "mrr": 0.55,
+        "ndcg_at_5": 0.612321
+      },
+      "bm25_okapi": {
+        "precision_at_1": 0.4,
+        "precision_at_5": 0.16,
+        "recall_at_5": 0.8,
+        "mrr": 0.516667,
+        "ndcg_at_5": 0.586135
+      },
+      "hybrid_lexical_rrf": {
+        "precision_at_1": 0.6,
+        "precision_at_5": 0.16,
+        "recall_at_5": 0.8,
+        "mrr": 0.666667,
+        "ndcg_at_5": 0.7
+      },
+      "sentence_transformer_cosine": {
+        "precision_at_1": 0.4,
+        "precision_at_5": 0.08,
+        "recall_at_5": 0.4,
+        "mrr": 0.4,
+        "ndcg_at_5": 0.4
+      },
+      "hybrid_lexical_semantic_rrf": {
+        "precision_at_1": 0.4,
+        "precision_at_5": 0.12,
+        "recall_at_5": 0.6,
+        "mrr": 0.44,
+        "ndcg_at_5": 0.477371
+      }
+    },
+    "normalized": {
+      "tfidf_cosine": {
+        "precision_at_1": 0.4,
+        "precision_at_5": 0.16,
+        "recall_at_5": 0.8,
+        "mrr": 0.55,
+        "ndcg_at_5": 0.612321
+      },
+      "bm25_okapi": {
+        "precision_at_1": 0.4,
+        "precision_at_5": 0.16,
+        "recall_at_5": 0.8,
+        "mrr": 0.516667,
+        "ndcg_at_5": 0.586135
+      },
+      "hybrid_lexical_rrf": {
+        "precision_at_1": 0.6,
+        "precision_at_5": 0.16,
+        "recall_at_5": 0.8,
+        "mrr": 0.666667,
+        "ndcg_at_5": 0.7
+      },
+      "sentence_transformer_cosine": {
+        "precision_at_1": 0.4,
+        "precision_at_5": 0.08,
+        "recall_at_5": 0.4,
+        "mrr": 0.4,
+        "ndcg_at_5": 0.4
+      },
+      "hybrid_lexical_semantic_rrf": {
+        "precision_at_1": 0.4,
+        "precision_at_5": 0.12,
+        "recall_at_5": 0.6,
+        "mrr": 0.44,
+        "ndcg_at_5": 0.477371
+      }
+    },
+    "keywords_identifiers": {
+      "tfidf_cosine": {
+        "precision_at_1": 0.4,
+        "precision_at_5": 0.16,
+        "recall_at_5": 0.8,
+        "mrr": 0.566667,
+        "ndcg_at_5": 0.626186
+      },
+      "bm25_okapi": {
+        "precision_at_1": 0.4,
+        "precision_at_5": 0.16,
+        "recall_at_5": 0.8,
+        "mrr": 0.516667,
+        "ndcg_at_5": 0.586135
+      },
+      "hybrid_lexical_rrf": {
+        "precision_at_1": 0.6,
+        "precision_at_5": 0.16,
+        "recall_at_5": 0.8,
+        "mrr": 0.666667,
+        "ndcg_at_5": 0.7
+      },
+      "sentence_transformer_cosine": {
+        "precision_at_1": 0.4,
+        "precision_at_5": 0.08,
+        "recall_at_5": 0.4,
+        "mrr": 0.4,
+        "ndcg_at_5": 0.4
+      },
+      "hybrid_lexical_semantic_rrf": {
+        "precision_at_1": 0.4,
+        "precision_at_5": 0.08,
+        "recall_at_5": 0.4,
+        "mrr": 0.4,
+        "ndcg_at_5": 0.4
+      }
+    },
+    "structured": {
+      "tfidf_cosine": {
+        "precision_at_1": 0.4,
+        "precision_at_5": 0.16,
+        "recall_at_5": 0.8,
+        "mrr": 0.566667,
+        "ndcg_at_5": 0.626186
+      },
+      "bm25_okapi": {
+        "precision_at_1": 0.4,
+        "precision_at_5": 0.16,
+        "recall_at_5": 0.8,
+        "mrr": 0.506667,
+        "ndcg_at_5": 0.577371
+      },
+      "hybrid_lexical_rrf": {
+        "precision_at_1": 0.6,
+        "precision_at_5": 0.16,
+        "recall_at_5": 0.8,
+        "mrr": 0.666667,
+        "ndcg_at_5": 0.7
+      },
+      "sentence_transformer_cosine": {
+        "precision_at_1": 0.4,
+        "precision_at_5": 0.08,
+        "recall_at_5": 0.4,
+        "mrr": 0.4,
+        "ndcg_at_5": 0.4
+      },
+      "hybrid_lexical_semantic_rrf": {
+        "precision_at_1": 0.4,
+        "precision_at_5": 0.08,
+        "recall_at_5": 0.4,
+        "mrr": 0.4,
+        "ndcg_at_5": 0.4
+      }
+    }
+  },
+  "paired_tfidf_baseline_identical_between_runs": true,
+  "per_issue_proxy_ranks": {
+    "pilot-01": {
+      "proxy_path": "src/marshmallow/schema.py",
+      "ranks_by_variant_method": {
+        "raw": {
+          "tfidf_cosine": 1,
+          "bm25_okapi": 1,
+          "hybrid_lexical_rrf": 1,
+          "sentence_transformer_cosine": 1,
+          "hybrid_lexical_semantic_rrf": 1
+        },
+        "normalized": {
+          "tfidf_cosine": 1,
+          "bm25_okapi": 1,
+          "hybrid_lexical_rrf": 1,
+          "sentence_transformer_cosine": 1,
+          "hybrid_lexical_semantic_rrf": 1
+        },
+        "keywords_identifiers": {
+          "tfidf_cosine": 1,
+          "bm25_okapi": 1,
+          "hybrid_lexical_rrf": 1,
+          "sentence_transformer_cosine": 1,
+          "hybrid_lexical_semantic_rrf": 1
+        },
+        "structured": {
+          "tfidf_cosine": 1,
+          "bm25_okapi": 1,
+          "hybrid_lexical_rrf": 1,
+          "sentence_transformer_cosine": 1,
+          "hybrid_lexical_semantic_rrf": 1
+        }
+      }
+    },
+    "pilot-02": {
+      "proxy_path": "pvlib/temperature.py",
+      "ranks_by_variant_method": {
+        "raw": {
+          "tfidf_cosine": 2,
+          "bm25_okapi": 1,
+          "hybrid_lexical_rrf": 1,
+          "sentence_transformer_cosine": null,
+          "hybrid_lexical_semantic_rrf": null
+        },
+        "normalized": {
+          "tfidf_cosine": 2,
+          "bm25_okapi": 1,
+          "hybrid_lexical_rrf": 1,
+          "sentence_transformer_cosine": null,
+          "hybrid_lexical_semantic_rrf": null
+        },
+        "keywords_identifiers": {
+          "tfidf_cosine": 2,
+          "bm25_okapi": 1,
+          "hybrid_lexical_rrf": 1,
+          "sentence_transformer_cosine": null,
+          "hybrid_lexical_semantic_rrf": null
+        },
+        "structured": {
+          "tfidf_cosine": 2,
+          "bm25_okapi": 1,
+          "hybrid_lexical_rrf": 1,
+          "sentence_transformer_cosine": null,
+          "hybrid_lexical_semantic_rrf": null
+        }
+      }
+    },
+    "pilot-03": {
+      "proxy_path": "pydicom/valuerep.py",
+      "ranks_by_variant_method": {
+        "raw": {
+          "tfidf_cosine": null,
+          "bm25_okapi": null,
+          "hybrid_lexical_rrf": null,
+          "sentence_transformer_cosine": null,
+          "hybrid_lexical_semantic_rrf": 5
+        },
+        "normalized": {
+          "tfidf_cosine": null,
+          "bm25_okapi": null,
+          "hybrid_lexical_rrf": null,
+          "sentence_transformer_cosine": null,
+          "hybrid_lexical_semantic_rrf": 5
+        },
+        "keywords_identifiers": {
+          "tfidf_cosine": null,
+          "bm25_okapi": null,
+          "hybrid_lexical_rrf": null,
+          "sentence_transformer_cosine": null,
+          "hybrid_lexical_semantic_rrf": null
+        },
+        "structured": {
+          "tfidf_cosine": null,
+          "bm25_okapi": null,
+          "hybrid_lexical_rrf": null,
+          "sentence_transformer_cosine": null,
+          "hybrid_lexical_semantic_rrf": null
+        }
+      }
+    },
+    "pilot-04": {
+      "proxy_path": "astroid/nodes/node_classes.py",
+      "ranks_by_variant_method": {
+        "raw": {
+          "tfidf_cosine": 1,
+          "bm25_okapi": 4,
+          "hybrid_lexical_rrf": 3,
+          "sentence_transformer_cosine": 1,
+          "hybrid_lexical_semantic_rrf": 1
+        },
+        "normalized": {
+          "tfidf_cosine": 1,
+          "bm25_okapi": 4,
+          "hybrid_lexical_rrf": 3,
+          "sentence_transformer_cosine": 1,
+          "hybrid_lexical_semantic_rrf": 1
+        },
+        "keywords_identifiers": {
+          "tfidf_cosine": 1,
+          "bm25_okapi": 4,
+          "hybrid_lexical_rrf": 3,
+          "sentence_transformer_cosine": 1,
+          "hybrid_lexical_semantic_rrf": 1
+        },
+        "structured": {
+          "tfidf_cosine": 1,
+          "bm25_okapi": 5,
+          "hybrid_lexical_rrf": 3,
+          "sentence_transformer_cosine": 1,
+          "hybrid_lexical_semantic_rrf": 1
+        }
+      }
+    },
+    "pilot-05": {
+      "proxy_path": "src/sqlfluff/core/parser/helpers.py",
+      "ranks_by_variant_method": {
+        "raw": {
+          "tfidf_cosine": 4,
+          "bm25_okapi": 3,
+          "hybrid_lexical_rrf": 1,
+          "sentence_transformer_cosine": null,
+          "hybrid_lexical_semantic_rrf": null
+        },
+        "normalized": {
+          "tfidf_cosine": 4,
+          "bm25_okapi": 3,
+          "hybrid_lexical_rrf": 1,
+          "sentence_transformer_cosine": null,
+          "hybrid_lexical_semantic_rrf": null
+        },
+        "keywords_identifiers": {
+          "tfidf_cosine": 3,
+          "bm25_okapi": 3,
+          "hybrid_lexical_rrf": 1,
+          "sentence_transformer_cosine": null,
+          "hybrid_lexical_semantic_rrf": null
+        },
+        "structured": {
+          "tfidf_cosine": 3,
+          "bm25_okapi": 3,
+          "hybrid_lexical_rrf": 1,
+          "sentence_transformer_cosine": null,
+          "hybrid_lexical_semantic_rrf": null
+        }
+      }
+    }
+  },
+  "leakage_audit": {
+    "runtime_input_columns_match_allowlist": true,
+    "fix_commit_or_patch_fields_in_runtime_input": false,
+    "fixing_pr_urls_in_runtime_input": false,
+    "fixing_pr_urls_in_raw_records": false,
+    "fix_commit_populated_for_included_manifest_rows": false,
+    "snapshot_hash_verified_for_every_dense_record": true,
+    "input_base_commits_match_provenance_manifest": true,
+    "labels_used_after_ranking": true,
+    "note": "The evaluator searches each generated query against the base snapshot before calling score_file_ranking with the separate relevant-path set. Fix PR metadata appears only in the provenance manifest. No patch or post-fix source was supplied to the index."
+  },
+  "artifacts": {
+    "dense_raw_jsonl": "evaluation\\raw_runs\\swebench_lite_dev_pilot_20261117_anonymized_semantic_cpu.jsonl",
+    "dense_runmeta_json": "evaluation\\raw_runs\\swebench_lite_dev_pilot_20261117_anonymized_semantic_cpu_runmeta.json",
+    "lexical_baseline_raw_jsonl": "evaluation\\raw_runs\\swebench_lite_dev_pilot_20261117_anonymized.jsonl",
+    "inputs_sha256": "12ee4a2b50ed25851ddf26eb9db8ad9b5f0c2d70cfb4acb470385b5149724df7",
+    "labels_sha256": "56d01974dfa148ec47c6896ceb6904d46874ea86281ed320a450e0d23fbfc04a",
+    "dense_raw_sha256": "7a7dc8b229fafc688b35adfe7d69e5d784c95c3adea6803d61b8533b6eb8fbe0",
+    "baseline_raw_sha256": "74ead76ad4757be48466b354b96a0507b8c601e34eddcbdcd1c48b868bffbcff",
+    "dense_runmeta_sha256": "c57463809cfa765a6c04936ef6180df6ba482fb11ecd984ee2753cd525fd6bca",
+    "replication_raw_jsonl": "evaluation\\raw_runs\\swebench_lite_dev_pilot_20261117_anonymized_semantic_cpu_replication.jsonl",
+    "replication_runmeta_json": "evaluation\\raw_runs\\swebench_lite_dev_pilot_20261117_anonymized_semantic_cpu_replication_runmeta.json",
+    "replication_raw_sha256": "a7c6c5d0cc8c4be2136dacad18ff6d22aec47cc6580775791d0e41f08de3a986",
+    "replication_runmeta_sha256": "4136edd7418856b0598aa4d0ade5f3e58984a4ce52cf0c3cdbf698cd5b4616cb"
+  },
+  "interpretation": "On this five-case changed-file-proxy pilot, standalone dense cosine and dense+lexical RRF underperformed TF-IDF on Recall@5, MRR, and nDCG@5 while requiring much longer CPU index construction. These descriptive estimates do not establish that dense retrieval is generally inferior or that the proxy paths are exact localization truth.",
+  "source_fingerprint": {
+    "src_dev_sha256": "0cff8ed08107b6579001da15c9342b8d3db8640a7d2e76c963865ecfc92420c1",
+    "tests_sha256": "24834aa794f961b0181d8aec227c7980de1964037c5b78e315cbf40a09c836a2",
+    "pyproject_sha256": "6576ad484cc0cdcd8a856887370bd415ca26d25446f1fb24477e4517f4355405",
+    "note": "Deterministic content fingerprints recorded because the workspace has no Git metadata."
+  },
+  "independent_replication": {
+    "records": 100,
+    "same_issue_variant_method_keys": true,
+    "ranked_files_exact_match": true,
+    "metrics_exact_match": true,
+    "query_trace_exact_match": true,
+    "snapshot_sha256_and_verified_flag_exact_match": true,
+    "note": "A second CPU process repeated all five methods on the same five base snapshots, four query variants, top-k=5, inputs and proxy labels. All 100 rankings and metric dictionaries exactly match the primary dense run. The replication raw JSONL and sidecar are separate; its process-level elapsed time and memory were not separately sampled."
+  }
+}

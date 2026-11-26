@@ -1,0 +1,165 @@
+{
+  "status": "repair_blocked_insufficient_evidence",
+  "issue": "In script.js addRun function around line 451, change matchState.balls += 2; to matchState.balls += 1; so that each legal delivery adds exactly one ball.",
+  "analysis": {
+    "summary": "In script.js addRun function around line 451, change matchState.balls += 2; to matchState.balls += 1; so that each legal delivery adds exactly one ball.",
+    "keywords": [
+      "matchstate.balls",
+      "addrun",
+      "adds",
+      "around",
+      "ball.",
+      "change",
+      "delivery",
+      "each",
+      "exactly",
+      "function",
+      "in",
+      "legal"
+    ],
+    "issue_type": "performance",
+    "component_hints": [
+      "ball.",
+      "matchState.balls",
+      "script.js"
+    ],
+    "retrieval_method": "tfidf_cosine",
+    "score_metric": "cosine_similarity"
+  },
+  "plan": [
+    "Inspect the bug report and its extracted issue features.",
+    "Prioritize the reported component hint(s): ball., matchState.balls, script.js",
+    "Index supported source functions and classes without executing repository files.",
+    "Retrieve source evidence matching the issue terms and component hints.",
+    "Compare candidate source behavior with the reported symptom and identify tests."
+  ],
+  "evidence": [
+    {
+      "path": "script.js",
+      "name": "addRun",
+      "kind": "Function",
+      "start_line": 437,
+      "end_line": 492,
+      "score": 0.18091,
+      "content": "function addRun(run) {\n    if (matchState.status !== \"live\") return;\n    \n    pushHistory();\n    \n    // Clear Free Hit status after a legal delivery is played\n    let freeHitWasActive = false;\n    if (matchState.freeHitActive) {\n        freeHitWasActive = true;\n        matchState.freeHitActive = false;\n    }\n    \n    // Update Score\n    matchState.score += run;\n    matchState.balls += 2;\n    \n    // Update Striker Batting Stats\n    let bat = matchState.stats[matchState.strikerName].batting;\n    bat.runs += run;\n    bat.balls++;\n    if (run === 4) {\n        bat.fours++;\n        triggerCelebration(4);\n    }\n    if (run === 6) {\n        bat.sixes++;\n        triggerCelebration(6);\n    }\n    \n    // Update Bowler Stats\n    let bowl = matchState.stats[matchState.currentBowlerName].bowling;\n    bowl.runs += run;\n    bowl.balls++;\n    \n    // Save striker name before potentially swapping strike\n    let strikerBefore = matchState.strikerName;\n    \n    // Record ball in current over\n    matchState.currentOver.push(run.toString());\n    \n    // Timeline entry\n    const overNum = formatOvers(matchState.balls - 1);\n    const freeHitSuffix = freeHitWasActive ? \" (Free Hit)\" : \"\";\n    addTimelineItem(\n        run.toString(), \n        `${matchState.currentBowlerName} to ${strikerBefore}${freeHitSuffix}`, \n        `${run === 4 ? \"FOUR! \" : run === 6 ? \"SIX! \" : \"\"}${run} run(s) scored.`\n    );\n    \n    // Swap strike on odd runs\n    if (run % 2 !== 0) {\n        swapStrikerEnd();\n    }\n    \n    checkInningsOrOverEnd();\n}"
+    },
+    {
+      "path": "script.js",
+      "name": "checkInningsOrOverEnd",
+      "kind": "Function",
+      "start_line": 871,
+      "end_line": 912,
+      "score": 0.142138,
+      "content": "function checkInningsOrOverEnd() {\n    let limitBalls = matchState.oversLimit * 6;\n    let battingSquad = matchState.battingTeam === 1 ? matchState.team1Squad : matchState.team2Squad;\n    \n    // 1. Check if Target is chased in Innings 2\n    if (matchState.innings === 2) {\n        let target = matchState.innings1Score + 1;\n        if (matchState.score >= target) {\n            let winText = `${matchState.battingTeam === 1 ? matchState.team1Name : matchState.team2Name} wins by ${battingSquad.length - 1 - matchState.wickets} wickets!`;\n            endMatch(winText);\n            return;\n        }\n    }\n    \n    // 2. Check if all out\n    if (matchState.wickets >= battingSquad.length - 1) {\n        handleInningsEnd(\"All Out\");\n        return;\n    }\n    \n    // 3. Check if overs completed\n    if (matchState.balls >= limitBalls) {\n        handleInningsEnd(\"Overs Completed\");\n        return;\n    }\n    \n    // 4. Check if over completed (6 legal balls)\n    let legalBallsInOver = matchState.currentOver.filter(ball => {\n        if (matchState.nbCountsAsLegal) {\n            return !ball.includes(\"Wd\"); // Nb is counted as a legal ball\n        } else {\n            return !ball.includes(\"Wd\") && !ball.includes(\"Nb\"); // Nb is not legal (rebowl)\n        }\n    }).length;\n    \n    if (legalBallsInOver === 6) {\n        handleOverEnd();\n    } else {\n        saveState();\n        updateUI();\n    }\n}"
+    },
+    {
+      "path": "script.js",
+      "name": "addExtra",
+      "kind": "Function",
+      "start_line": 494,
+      "end_line": 621,
+      "score": 0.10671,
+      "content": "function addExtra(type) {\n    if (matchState.status !== \"live\") return;\n    \n    if (type === \"wd\") {\n        const extraStr = prompt(\"Additional runs on Wide? (Enter 0 if just wide)\", \"0\");\n        if (extraStr === null) return; // Cancelled\n        const extra = parseInt(extraStr) || 0;\n        \n        pushHistory();\n        const penalty = (matchState.widePenalty !== undefined) ? matchState.widePenalty : 1;\n        const totalWideRuns = penalty + extra;\n        \n        matchState.score += totalWideRuns;\n        matchState.extras.wd += totalWideRuns;\n        \n        // Bowler charged with wide runs, but Wide is not a legal ball\n        matchState.stats[matchState.currentBowlerName].bowling.runs += totalWideRuns;\n        \n        const ballLabel = totalWideRuns > 1 ? `${totalWideRuns}Wd` : \"Wd\";\n        matchState.currentOver.push(ballLabel);\n        \n        const freeHitSuffix = matchState.freeHitActive ? \" (Free Hit)\" : \"\";\n        addTimelineItem(\n            \"Wd\", \n            `${matchState.currentBowlerName} to ${matchState.strikerName}${freeHitSuffix}`,\n            `Wide ball. Conceded ${totalWideRuns} runs.`\n        );\n        \n    } else if (type === \"nb\") {\n        const batRunsStr = prompt(\"Runs scored off the bat on this No Ball? (Enter 0 if none)\", \"0\");\n        if (batRunsStr === null) return;\n        const batRuns = parseInt(batRunsStr) || 0;\n        \n        pushHistory();\n        const penalty = (matchState.nbPenalty !== undefined) ? matchState.nbPenalty : 1;\n        const totalNbRuns = penalty + batRuns;\n        \n        matchState.score += totalNbRuns;\n        matchState.extras.nb += penalty;\n        \n        // Batsman gets runs off the bat, faces a ball (in standard records, batsman faces the NB)\n        let bat = matchState.stats[matchState.strikerName].batting;\n        bat.runs += batRuns;\n        bat.balls++;\n        if (batRuns === 4) {\n            bat.fours++;\n            triggerCelebration(4);\n        }\n        if (batRuns === 6) {\n            bat.sixes++;\n            triggerCelebration(6);\n        }\n        \n        // Bowler charged with all runs on a no-ball, no legal ball unless toggle is enabled\n        matchState.stats[matchState.currentBowlerName].bowling.runs += totalNbRuns;\n        if (matchState.nbCountsAsLegal) {\n            matchState.stats[matchState.currentBowlerName].bowling.balls++;\n            matchState.balls += 2;\n        }\n        \n        const ballLabel = batRuns > 0 ? `${batRuns}Nb` : \"Nb\";\n        matchState.currentOver.push(ballLabel);\n        \n        let strikerBefore = matchState.strikerName;\n        const freeHitSuffix = matchState.freeHitActive ? \" (Free Hit)\" : \"\";\n        addTimelineItem(\n            \"Nb\", \n            `${matchState.currentBowlerName} to ${strikerBefore}${freeHitSuffix}`,\n            `No Ball. ${batRuns} runs off the bat. Total ${totalNbRuns} runs.`\n        );\n        \n        // Set Free Hit active on No Ball if enabled\n        if (matchState.freeHitEnabled) {\n            matchState.freeHitActive = true;\n        }\n        \n        // Swap strike on odd runs scored off the bat\n        if (batRuns % 2 !== 0) {\n            swapStrikerEnd();\n        }\n        \n    } else if (type === \"b\" || type === \"lb\") {\n        const byeRunsStr = prompt(`How many ${type === \"b\" ? \"Bye\" : \"Leg Bye\"} runs?`, \"1\");\n        if (byeRunsStr === null) return;\n        const byeRuns = parseInt(byeRunsStr) || 1;\n        \n        pushHistory();\n        \n        // Clear Free Hit status after a legal delivery is played\n        let freeHitWasActive = false;\n        if (matchState.freeHitActive) {\n            freeHitWasActive = true;\n            matchState.freeHitActive = false;\n        }\n        \n        matchState.score += byeRuns;\n        if (type === \"b\") {\n            matchState.extras.b += byeRuns;\n        } else {\n            matchState.extras.lb += byeRuns;\n        }\n        \n        // Batsman faces a ball, but gets no runs\n        matchState.stats[matchState.strikerName].batting.balls++;\n        \n        // Bowler bowls a legal ball, but is not charged with bye/leg bye runs\n        matchState.stats[matchState.currentBowlerName].bowling.balls++;\n        matchState.balls += 2;\n        \n        const ballLabel = `${byeRuns}${type === \"b\" ? \"B\" : \"Lb\"}`;\n        matchState.currentOver.push(ballLabel);\n        \n        let strikerBefore = matchState.strikerName;\n        const freeHitSuffix = freeHitWasActive ? \" (Free Hit)\" : \"\";\n        addTimelineItem(\n            type.toUpperCase(), \n            `${matchState.currentBowlerName} to ${strikerBefore}${freeHitSuffix}`,\n            `${byeRuns} ${type === \"b\" ? \"Bye\" : \"Leg Bye\"} runs. (Counts as legal ball)`\n        );\n        \n        // Swap strike on odd bye/leg bye runs\n        if (byeRuns % 2 !== 0) {\n            swapStrikerEnd();\n        }\n    }\n    \n    checkInningsOrOverEnd();\n}"
+    },
+    {
+      "path": "script.js",
+      "name": "renderCurrentOverBalls",
+      "kind": "Function",
+      "start_line": 1199,
+      "end_line": 1227,
+      "score": 0.106707,
+      "content": "function renderCurrentOverBalls() {\n    const list = document.getElementById(\"currentOver\");\n    list.innerHTML = \"\";\n    \n    if (matchState.currentOver.length === 0) {\n        list.innerHTML = `<span class=\"text-muted\" style=\"font-size: 0.95rem;\">Waiting for first delivery...</span>`;\n        return;\n    }\n    \n    matchState.currentOver.forEach(ball => {\n        const bubble = document.createElement(\"span\");\n        bubble.className = \"ball-circle\";\n        \n        if (ball === \"0\") {\n            bubble.classList.add(\"dot\");\n        } else if (ball === \"4\") {\n            bubble.classList.add(\"four\");\n        } else if (ball === \"6\") {\n            bubble.classList.add(\"six\");\n        } else if (ball === \"W\") {\n            bubble.classList.add(\"wicket\");\n        } else if (ball.includes(\"Wd\") || ball.includes(\"Nb\")) {\n            bubble.classList.add(\"extra\");\n        }\n        \n        bubble.innerText = ball;\n        list.appendChild(bubble);\n    });\n}"
+    },
+    {
+      "path": "script.js",
+      "name": "confirmWicket",
+      "kind": "Function",
+      "start_line": 728,
+      "end_line": 834,
+      "score": 0.104077,
+      "content": "function confirmWicket() {\n    const dismissedName = document.getElementById(\"dismissedBatsman\").value;\n    const dismissalType = document.getElementById(\"dismissalType\").value;\n    const fielderName = document.getElementById(\"fielderName\").value.trim();\n    const nextName = document.getElementById(\"nextBatsman\").value;\n    \n    pushHistory();\n    \n    // Clear Free Hit status after a legal delivery is played\n    if (matchState.freeHitActive) {\n        matchState.freeHitActive = false;\n    }\n    \n    // Update score counts\n    matchState.wickets++;\n    matchState.balls += 2;\n    \n    // Bowler gets credit for legal ball\n    matchState.stats[matchState.currentBowlerName].bowling.balls++;\n    \n    // Batsman gets credit for facing the ball\n    // (Only striker faces the ball, but non-striker could get run-out. However, the ball is still bowled to striker)\n    matchState.stats[matchState.strikerName].batting.balls++;\n    \n    matchState.currentOver.push(\"W\");\n    \n    // Format dismissal text\n    let dismissalText = \"\";\n    let isBowlerWicket = false;\n    \n    const bowler = matchState.currentBowlerName;\n    \n    if (dismissalType === \"Bowled\") {\n        dismissalText = `b ${bowler}`;\n        isBowlerWicket = true;\n    } else if (dismissalType === \"LBW\") {\n        dismissalText = `lbw b ${bowler}`;\n        isBowlerWicket = true;\n    } else if (dismissalType === \"Caught\") {\n        dismissalText = fielderName ? `c ${fielderName} b ${bowler}` : `c & b ${bowler}`;\n        isBowlerWicket = true;\n    } else if (dismissalType === \"Stumped\") {\n        dismissalText = fielderName ? `st ${fielderName} b ${bowler}` : `st b ${bowler}`;\n        isBowlerWicket = true;\n    } else if (dismissalType === \"Run Out\") {\n        dismissalText = fielderName ? `run out (${fielderName})` : \"run out\";\n        isBowlerWicket = false; // Not a bowler's wicket\n    } else if (dismissalType === \"Hit Wicket\") {\n        dismissalText = `hit wicket b ${bowler}`;\n        isBowlerWicket = true;\n    } else if (dismissalType === \"Retired Hurt\") {\n        dismissalText = \"retired hurt\";\n        isBowlerWicket = false;\n        // Wickets is counted, but bowler doesn't get it\n    }\n    \n    // Save batsman dismissal stats\n    matchState.stats[dismissedName].batting.dismissal = dismissalText;\n    \n    if (isBowlerWicket) {\n        matchState.stats[bowler].bowling.wickets++;\n    }\n    \n    // Record Fall of Wicket (FoW)\n    const currentScore = matchState.score;\n    const overStamp = formatOvers(matchState.balls);\n    matchState.fallOfWickets[matchState.innings].push({\n        wicketNumber: matchState.wickets,\n        score: currentScore,\n        over: overStamp,\n        batsmanOut: dismissedName,\n        bowler: bowler\n    });\n    \n    addTimelineItem(\n        \"W\", \n        `WICKET! ${dismissedName}`,\n        `${dismissalText}. Score: ${currentScore}/${matchState.wickets} (${overStamp} Ov)`\n    );\n    \n    // Check if Innings / Match ends (e.g. all out)\n    const battingSquad = matchState.battingTeam === 1 ? matchState.team1Squad : matchState.team2Squad;\n    const wicketsLimit = battingSquad.length - 1;\n    \n    closeWicketModal();\n    \n    if (matchState.wickets >= wicketsLimit) {\n        // Innings is over - all out\n        handleInningsEnd(\"All Out\");\n    } else {\n        // Bring in new batsman\n        if (dismissedName === matchState.strikerName) {\n            matchState.strikerName = nextName;\n        } else {\n            matchState.nonStrikerName = nextName;\n        }\n        \n        matchState.stats[nextName].batting.dismissal = \"not out\";\n        \n        // Add to batting order tracker\n        if (!matchState.battingOrder[matchState.innings].includes(nextName)) {\n            matchState.battingOrder[matchState.innings].push(nextName);\n        }\n        \n        checkInningsOrOverEnd();\n    }\n}"
+    },
+    {
+      "path": "script.js",
+      "name": "handleOverEnd",
+      "kind": "Function",
+      "start_line": 914,
+      "end_line": 945,
+      "score": 0.090979,
+      "content": "function handleOverEnd() {\n    // Check for Maiden Over\n    // We check runs conceded in the current over\n    let runsConceded = 0;\n    matchState.currentOver.forEach(ball => {\n        if (ball.includes(\"Wd\")) {\n            runsConceded += parseInt(ball) || 1;\n        } else if (ball.includes(\"Nb\")) {\n            runsConceded += parseInt(ball) || 1;\n        } else if (ball === \"W\") {\n            // 0 runs\n        } else if (ball.includes(\"B\") || ball.includes(\"Lb\")) {\n            // Byes/Leg byes do not count towards bowler runs\n        } else {\n            runsConceded += parseInt(ball) || 0;\n        }\n    });\n    \n    if (runsConceded === 0) {\n        matchState.stats[matchState.currentBowlerName].bowling.maidens++;\n    }\n    \n    // Save previous bowler\n    matchState.lastBowlerName = matchState.currentBowlerName;\n    matchState.currentOver = [];\n    \n    // Swap batsman strike\n    swapStrikerEnd();\n    \n    // Show bowler selection modal\n    openBowlerModal();\n}"
+    },
+    {
+      "path": "script.js",
+      "name": "formatOvers",
+      "kind": "Function",
+      "start_line": 1530,
+      "end_line": 1534,
+      "score": 0.07202,
+      "content": "function formatOvers(balls) {\n    let ov = Math.floor(balls / 6);\n    let bl = balls % 6;\n    return `${ov}.${bl}`;\n}"
+    },
+    {
+      "path": "script.js",
+      "name": "confirmEditPlayer",
+      "kind": "Function",
+      "start_line": 1595,
+      "end_line": 1702,
+      "score": 0.071996,
+      "content": "function confirmEditPlayer() {\n    const reassignName = document.getElementById(\"editPlayerReassignSelect\").value;\n    let renameName = document.getElementById(\"editPlayerRenameInput\").value.trim();\n    const isTwoSiderChecked = document.getElementById(\"editPlayerTwoSiderCheckbox\").checked;\n    \n    if (!renameName) {\n        alert(\"Player name cannot be empty.\");\n        return;\n    }\n    \n    let currentName = \"\";\n    if (editRole === \"striker\") currentName = matchState.strikerName;\n    else if (editRole === \"nonStriker\") currentName = matchState.nonStrikerName;\n    else if (editRole === \"bowler\") currentName = matchState.currentBowlerName;\n    \n    pushHistory();\n    let changed = false;\n    \n    // Rename current player\n    if (renameName !== currentName) {\n        renamePlayer(currentName, renameName);\n        currentName = renameName; // Update local tracker\n        changed = true;\n    }\n    \n    // Handle Two-Sider checkbox logic\n    const wasTwoSider = matchState.stats[currentName] && matchState.stats[currentName].isTwoSider || false;\n    if (isTwoSiderChecked !== wasTwoSider) {\n        if (isTwoSiderChecked) {\n            // Find which team the player belongs to\n            const inT1 = matchState.team1Squad.includes(currentName);\n            const inT2 = matchState.team2Squad.includes(currentName);\n            \n            let baseName = currentName.replace(\" (T1)\", \"\").replace(\" (T2)\", \"\");\n            let t1Name = baseName + \" (T1)\";\n            let t2Name = baseName + \" (T2)\";\n            \n            if (inT1 && !currentName.includes(\"(T1)\")) {\n                renamePlayer(currentName, t1Name);\n                currentName = t1Name;\n            } else if (inT2 && !currentName.includes(\"(T2)\")) {\n                renamePlayer(currentName, t2Name);\n                currentName = t2Name;\n            }\n            \n            // Mark as two-sider\n            matchState.stats[currentName].isTwoSider = true;\n            \n            // Add to the other team's squad list as well!\n            if (inT1) {\n                if (!matchState.team2Squad.includes(t2Name)) {\n                    matchState.team2Squad.push(t2Name);\n                    // Initialize stats for the other team's version\n                    matchState.stats[t2Name] = {\n                        batting: { runs: 0, balls: 0, fours: 0, sixes: 0, dismissal: \"yet to bat\" },\n                        bowling: { balls: 0, maidens: 0, runs: 0, wickets: 0 },\n                        isTwoSider: true\n                    };\n                }\n            } else if (inT2) {\n                if (!matchState.team1Squad.includes(t1Name)) {\n                    matchState.team1Squad.push(t1Name);\n                    // Initialize stats\n                    matchState.stats[t1Name] = {\n                        batting: { runs: 0, balls: 0, fours: 0, sixes: 0, dismissal: \"yet to bat\" },\n                        bowling: { balls: 0, maidens: 0, runs: 0, wickets: 0 },\n                        isTwoSider: true\n                    };\n                }\n            }\n            \n            alert(`Player \"${baseName}\" is now a Two-Sider!\\nWe added \"${t1Name}\" to ${matchState.team1Name} and \"${t2Name}\" to ${matchState.team2Name} to track their stats separately in each innings.`);\n        } else {\n            // Uncheck: just set the flag to false\n            if (matchState.stats[currentName]) {\n                matchState.stats[currentName].isTwoSider = false;\n            }\n        }\n        changed = true;\n    }\n    \n    // Reassign crease position\n    if (reassignName && reassignName !== currentName) {\n        if (editRole === \"striker\") {\n            matchState.strikerName = reassignName;\n            matchState.stats[reassignName].batting.dismissal = \"not out\";\n            if (!matchState.battingOrder[matchState.innings].includes(reassignName)) {\n                matchState.battingOrder[matchState.innings].push(reassignName);\n            }\n        } else if (editRole === \"nonStriker\") {\n            matchState.nonStrikerName = reassignName;\n            matchState.stats[reassignName].batting.dismissal = \"not out\";\n            if (!matchState.battingOrder[matchState.innings].includes(reassignName)) {\n                matchState.battingOrder[matchState.innings].push(reassignName);\n            }\n        } else if (editRole === \"bowler\") {\n            matchState.currentBowlerName = reassignName;\n        }\n        changed = true;\n    }\n    \n    if (changed) {\n        saveState();\n        updateUI();\n    }\n    \n    closeEditPlayerModal();\n}"
+    }
+  ],
+  "investigation": {
+    "findings": [
+      "[E1] Retrieved Function `addRun` at script.js:437-492 (similarity 0.1809).",
+      "[E2] Retrieved Function `checkInningsOrOverEnd` at script.js:871-912 (similarity 0.1421).",
+      "[E3] Retrieved Function `addExtra` at script.js:494-621 (similarity 0.1067).",
+      "[E4] Retrieved Function `renderCurrentOverBalls` at script.js:1199-1227 (similarity 0.1067).",
+      "[E5] Retrieved Function `confirmWicket` at script.js:728-834 (similarity 0.1041).",
+      "[E6] Retrieved Function `handleOverEnd` at script.js:914-945 (similarity 0.0910).",
+      "[E7] Retrieved Function `formatOvers` at script.js:1530-1534 (similarity 0.0720).",
+      "[E8] Retrieved Function `confirmEditPlayer` at script.js:1595-1702 (similarity 0.0720)."
+    ],
+    "hypotheses": [
+      "[E1] `addRun` may be relevant because its name or source overlaps the issue; inspect its behavior and related tests.",
+      "[E2] `checkInningsOrOverEnd` may be relevant because its name or source overlaps the issue; inspect its behavior and related tests.",
+      "[E3] `addExtra` may be relevant because its name or source overlaps the issue; inspect its behavior and related tests."
+    ],
+    "uncertainties": [
+      "Similarity does not establish causality; verify behavior with targeted tests."
+    ],
+    "evidence_references": {
+      "[E1] `addRun` may be relevant because its name or source overlaps the issue; inspect its behavior and related tests.": [
+        "E1"
+      ],
+      "[E2] `checkInningsOrOverEnd` may be relevant because its name or source overlaps the issue; inspect its behavior and related tests.": [
+        "E2"
+      ],
+      "[E3] `addExtra` may be relevant because its name or source overlaps the issue; inspect its behavior and related tests.": [
+        "E3"
+      ]
+    },
+    "source": "heuristic"
+  },
+  "candidate_patch": null,
+  "test_result": {
+    "executed": false,
+    "passed": false,
+    "reason": "No attempt has run."
+  },
+  "review": {
+    "verdict": "not_reviewable",
+    "reason": "No candidate patch is available."
+  },
+  "repair_attempts": [
+    {
+      "attempt": 1,
+      "status": "repair_blocked_insufficient_evidence",
+      "model_request": true,
+      "sandbox_call": false,
+      "reason": "Provider did not return a unified diff."
+    }
+  ],
+  "limitations": [
+    "Retrieval uses lexical overlap; semantic embeddings and reranking are not configured.",
+    "A candidate patch is not evidence that the bug is fixed."
+  ]
+}

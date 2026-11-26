@@ -1,0 +1,10 @@
+diff --git a/script.js b/script.js
+--- a/script.js
++++ b/script.js
+@@ -449,6 +449,6 @@
+     // Update Score
+     matchState.score += run;
+-    matchState.balls += 2;
++    matchState.balls += 1;
+     
+     // Update Striker Batting Stats

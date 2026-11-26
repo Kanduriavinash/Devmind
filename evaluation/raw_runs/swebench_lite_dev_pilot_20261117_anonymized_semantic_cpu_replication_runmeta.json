@@ -1,0 +1,139 @@
+{
+  "run": "independent deterministic-ranking replication of the five-repository dense comparison",
+  "run_date": "2026-11-17",
+  "command": [
+    ".venv\\Scripts\\python.exe",
+    "-m",
+    "devmind.retrieval_evaluation",
+    "--inputs",
+    "datasets/evaluation_inputs.csv",
+    "--labels",
+    "datasets/retrieval_ground_truth.csv",
+    "--output",
+    "evaluation\\raw_runs\\swebench_lite_dev_pilot_20261117_anonymized_semantic_cpu_replication.jsonl",
+    "--top-k",
+    "5",
+    "--embedding-model",
+    ".devmind/models/all-MiniLM-L6-v2"
+  ],
+  "exit_code": 0,
+  "output_file_last_write_local": "2026-11-17T10:44:50.948094+05:30",
+  "elapsed_seconds": null,
+  "elapsed_note": "The CLI does not record process wall time in each JSONL record; no independent process-level wall timer was active for this replication.",
+  "peak_process_tree_memory_mib": null,
+  "memory_note": "No process-tree memory sampler was active for this replication. Use the primary run metadata for the sampled 932.89 MiB observation.",
+  "replication_raw_jsonl": "evaluation\\raw_runs\\swebench_lite_dev_pilot_20261117_anonymized_semantic_cpu_replication.jsonl",
+  "replication_raw_sha256": "a7c6c5d0cc8c4be2136dacad18ff6d22aec47cc6580775791d0e41f08de3a986",
+  "primary_raw_jsonl": "evaluation\\raw_runs\\swebench_lite_dev_pilot_20261117_anonymized_semantic_cpu.jsonl",
+  "primary_raw_sha256": "7a7dc8b229fafc688b35adfe7d69e5d784c95c3adea6803d61b8533b6eb8fbe0",
+  "input_sha256": "12ee4a2b50ed25851ddf26eb9db8ad9b5f0c2d70cfb4acb470385b5149724df7",
+  "labels_sha256": "56d01974dfa148ec47c6896ceb6904d46874ea86281ed320a450e0d23fbfc04a",
+  "records": 100,
+  "comparison": {
+    "same_record_keys": 100,
+    "ranked_files_exact_match": true,
+    "metrics_exact_match": true,
+    "query_trace_exact_match": true,
+    "snapshot_hashes_verified": 100,
+    "same_run_tf_idf_records": 20
+  },
+  "model_load_seconds": 28.53204,
+  "index_build_seconds_by_repository_and_method": {
+    "marshmallow-code/marshmallow": {
+      "tfidf_cosine": 0.220942,
+      "bm25_okapi": 0.197796,
+      "sentence_transformer_cosine": 50.508184
+    },
+    "pvlib/pvlib-python": {
+      "tfidf_cosine": 0.381764,
+      "bm25_okapi": 0.349424,
+      "sentence_transformer_cosine": 62.790072
+    },
+    "pydicom/pydicom": {
+      "tfidf_cosine": 0.617731,
+      "bm25_okapi": 0.524901,
+      "sentence_transformer_cosine": 105.41195
+    },
+    "pylint-dev/astroid": {
+      "tfidf_cosine": 0.762763,
+      "bm25_okapi": 0.642955,
+      "sentence_transformer_cosine": 141.911105
+    },
+    "sqlfluff/sqlfluff": {
+      "tfidf_cosine": 0.527265,
+      "bm25_okapi": 0.429146,
+      "sentence_transformer_cosine": 82.077756
+    }
+  },
+  "query_retrieval_latency_seconds": {
+    "bm25_okapi": {
+      "n": 20,
+      "mean_seconds": 0.090850265,
+      "median_seconds": 0.0825088,
+      "max_seconds": 0.1829987
+    },
+    "hybrid_lexical_rrf": {
+      "n": 20,
+      "mean_seconds": 0.159275415,
+      "median_seconds": 0.1399186,
+      "max_seconds": 0.3214188
+    },
+    "hybrid_lexical_semantic_rrf": {
+      "n": 20,
+      "mean_seconds": 0.393877705,
+      "median_seconds": 0.31907850000000004,
+      "max_seconds": 0.8199873
+    },
+    "sentence_transformer_cosine": {
+      "n": 20,
+      "mean_seconds": 0.190621755,
+      "median_seconds": 0.1905519,
+      "max_seconds": 0.2460129
+    },
+    "tfidf_cosine": {
+      "n": 20,
+      "mean_seconds": 0.084855525,
+      "median_seconds": 0.0859896,
+      "max_seconds": 0.1606104
+    }
+  },
+  "runtime_environment": {
+    "python": "3.12.5",
+    "os": "Windows 11 build 26300",
+    "sentence_transformers": "5.7.0",
+    "transformers": "4.57.6",
+    "torch": "2.13.0+cpu",
+    "numpy": "2.2.2",
+    "torch_threads": 10,
+    "cuda_available": false,
+    "faiss_available": false
+  },
+  "stderr_note": "The process emitted a non-fatal SyntaxWarning while parsing the pinned pvlib versioneer.py file.",
+  "measurement_scope": "This second process independently repeats all five methods, query conditions, snapshots, and proxy labels. It verifies deterministic rankings/metrics. Its resource observations are intentionally marked unavailable rather than inferred.",
+  "model": {
+    "name": "sentence-transformers/all-MiniLM-L6-v2",
+    "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "license": "Apache-2.0",
+    "directory": ".devmind/models/all-MiniLM-L6-v2",
+    "directory_sha256": "3c9da5348bc316aa84664e33ac0590590c7fdfe12f2386a0dd513179b8b2393f",
+    "device": "cpu",
+    "dimensions": 384,
+    "sentence_transformers": "5.7.0",
+    "transformers": "4.57.6",
+    "torch": "2.13.0+cpu"
+  },
+  "dataset": {
+    "name": "SWE-bench/SWE-bench_Lite",
+    "revision": "b0dde1093fe417d83b7184254edf8199c1f0dff5",
+    "split": "dev",
+    "inputs_sha256": "12ee4a2b50ed25851ddf26eb9db8ad9b5f0c2d70cfb4acb470385b5149724df7",
+    "labels_sha256": "56d01974dfa148ec47c6896ceb6904d46874ea86281ed320a450e0d23fbfc04a",
+    "top_k": 5
+  },
+  "source_fingerprint": {
+    "src_dev_sha256": "0cff8ed08107b6579001da15c9342b8d3db8640a7d2e76c963865ecfc92420c1",
+    "tests_sha256": "24834aa794f961b0181d8aec227c7980de1964037c5b78e315cbf40a09c836a2",
+    "pyproject_sha256": "6576ad484cc0cdcd8a856887370bd415ca26d25446f1fb24477e4517f4355405",
+    "note": "Deterministic content fingerprints recorded because the workspace has no Git metadata."
+  }
+}

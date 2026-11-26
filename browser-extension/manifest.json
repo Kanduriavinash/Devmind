@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "DevMind Repository Analyzer",
+  "version": "0.1.0",
+  "description": "Open DevMind with the GitHub repository you are viewing.",
+  "permissions": ["activeTab", "storage"],
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "action": {
+    "default_title": "Open DevMind",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  }
+}

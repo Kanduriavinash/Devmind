@@ -1,0 +1,95 @@
+{
+  "created_at_utc": "2026-11-17T07:32:32.350152+00:00",
+  "docker_server_version": "29.9.1",
+  "security_configuration": {
+    "runtime_uid_gid": "10001:10001",
+    "network": "none",
+    "capabilities": "all dropped",
+    "read_only_root": true
+  },
+  "target_repository_code_executed_on_host": false,
+  "fixtures": [
+    {
+      "fixture": "quickcart-cart-reload",
+      "image": "devmind-sandbox:node22",
+      "runner": "node",
+      "container_user": "10001:10001",
+      "baseline": {
+        "executed": true,
+        "passed": false,
+        "timed_out": false,
+        "exit_code": 1,
+        "mode": "baseline_repository",
+        "runner": "node",
+        "test_command": "node --test",
+        "container_command": "test \"$(id -u)\" -ne 0 && command -v node >/dev/null && printf '__DEVMIND_TEST_COMMAND_STARTED__\\n' && exec node --test",
+        "container_user": "10001:10001",
+        "timeout_seconds": 60,
+        "stdout": "TAP version 13\n# Subtest: cart contents and badge survive a page reload\nnot ok 1 - cart contents and badge survive a page reload\n  ---\n  duration_ms: 7.814369\n  type: 'test'\n  location: '/workspace/test/cart-reload.test.cjs:29:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    '0' !== '1'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: '1'\n  actual: '0'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/workspace/test/cart-reload.test.cjs:36:10)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 199.125367",
+        "stderr": "",
+        "stdout_truncated": false,
+        "stderr_truncated": false
+      },
+      "candidate": {
+        "executed": true,
+        "passed": true,
+        "timed_out": false,
+        "exit_code": 0,
+        "mode": "candidate_patch",
+        "runner": "node",
+        "test_command": "node --test",
+        "container_command": "git apply --ignore-whitespace --unidiff-zero /candidate.patch && test \"$(id -u)\" -ne 0 && command -v node >/dev/null && printf '__DEVMIND_TEST_COMMAND_STARTED__\\n' && exec node --test",
+        "container_user": "10001:10001",
+        "timeout_seconds": 60,
+        "stdout": "TAP version 13\n# Subtest: cart contents and badge survive a page reload\nok 1 - cart contents and badge survive a page reload\n  ---\n  duration_ms: 2.70031\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 133.977678",
+        "stderr": "",
+        "stdout_truncated": false,
+        "stderr_truncated": false
+      },
+      "fixture_sha256_before": "2174f030fecfc606fc0e9e996c4f33d0b7a4c5cf18a890969de033f3be550375",
+      "fixture_sha256_after": "2174f030fecfc606fc0e9e996c4f33d0b7a4c5cf18a890969de033f3be550375",
+      "fixture_unchanged": true
+    },
+    {
+      "fixture": "safe-divide-python",
+      "image": "devmind-sandbox:py312",
+      "runner": "pytest",
+      "container_user": "10001:10001",
+      "baseline": {
+        "executed": true,
+        "passed": false,
+        "timed_out": false,
+        "exit_code": 1,
+        "mode": "baseline_repository",
+        "runner": "pytest",
+        "test_command": "pytest -q",
+        "container_command": "test \"$(id -u)\" -ne 0 && command -v pytest >/dev/null && printf '__DEVMIND_TEST_COMMAND_STARTED__\\n' && exec pytest -q",
+        "container_user": "10001:10001",
+        "timeout_seconds": 60,
+        "stdout": ".F                                                                       [100%]\n=================================== FAILURES ===================================\n______________________ test_zero_denominator_returns_none ______________________\n\n    def test_zero_denominator_returns_none():\n>       assert safe_divide(8, 0) is None\n\ntest_calculator.py:9: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nnumerator = 8, denominator = 0\n\n    def safe_divide(numerator: float, denominator: float) -> float | None:\n        \"\"\"Divide two numbers, returning None when denominator is zero.\"\"\"\n>       return numerator / denominator\nE       ZeroDivisionError: division by zero\n\ncalculator.py:6: ZeroDivisionError\n=========================== short test summary info ============================\nFAILED test_calculator.py::test_zero_denominator_returns_none - ZeroDivisionE...\n1 failed, 1 passed in 0.37s",
+        "stderr": "",
+        "stdout_truncated": false,
+        "stderr_truncated": false
+      },
+      "candidate": {
+        "executed": true,
+        "passed": true,
+        "timed_out": false,
+        "exit_code": 0,
+        "mode": "candidate_patch",
+        "runner": "pytest",
+        "test_command": "pytest -q",
+        "container_command": "git apply --ignore-whitespace --unidiff-zero /candidate.patch && test \"$(id -u)\" -ne 0 && command -v pytest >/dev/null && printf '__DEVMIND_TEST_COMMAND_STARTED__\\n' && exec pytest -q",
+        "container_user": "10001:10001",
+        "timeout_seconds": 60,
+        "stdout": "..                                                                       [100%]\n2 passed in 0.23s",
+        "stderr": "",
+        "stdout_truncated": false,
+        "stderr_truncated": false
+      },
+      "fixture_sha256_before": "ec1530b85f8dc0af5a341cdf0b8b9b45a013f3093b3adade777782606f7da7e8",
+      "fixture_sha256_after": "ec1530b85f8dc0af5a341cdf0b8b9b45a013f3093b3adade777782606f7da7e8",
+      "fixture_unchanged": true
+    }
+  ]
+}

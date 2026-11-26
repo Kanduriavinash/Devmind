@@ -1,0 +1,73 @@
+# Glossary
+
+- **Agent:** A software component that uses instructions and tools to complete a bounded task. DevMind's full agent set is not yet implemented.
+- **AST (Abstract Syntax Tree):** A structured representation of source code syntax; parsing it does not execute the source.
+- **Baseline:** A reference method used for comparison, such as a model-only repair attempt.
+- **Candidate patch:** A proposed source change. It remains unverified until the exact change is tested.
+- **Baseline test run:** Execution of the unmodified repository test suite before candidate comparisons. A failed baseline can show existing test failures; a blocked baseline means no baseline outcome is known.
+- **Evidence:** Traceable repository text with a file path and line span that supports a finding.
+- **Commit-pinned snapshot:** Repository source retrieved by a full Git commit SHA, so later branch movement does not change the selected revision.
+- **Archive SHA-256:** A digest of the exact ZIP bytes downloaded from GitHub. It identifies the archive used for a run; it is not a signature or proof that the source is safe.
+- **Feedback loop:** A bounded cycle where test failures are passed to the patch generator to request a revision; it stops at a fixed attempt limit or when a stopping condition is met.
+- **Failure-informed retrieval:** A retry search that augments the original bug report with parsed failing-test names, stack-frame paths/symbols, and error classes, then searches the unchanged repository snapshot for new evidence.
+- **Attempt audit record:** Per-repair-attempt evidence IDs and spans, selection rationale, candidate patch digest, test command/configuration/result, and structured failure analysis. It supports review; it does not establish patch correctness.
+- **Embedding:** A numeric representation of text/code used to compare content. DevMind has an optional local Sentence Transformers adapter; one five-case dense comparison has been measured against unreviewed changed-file proxies.
+- **Vector index:** A structure that stores numeric vectors and finds nearby vectors. DevMind saves an ordered NumPy matrix and JSON chunk metadata; FAISS can accelerate search when installed.
+- **FAISS:** A library for searching collections of vectors. DevMind uses its exact inner-product index when available and otherwise uses exact NumPy search.
+- **Cosine similarity:** A score comparing the direction of two vectors. After normalization, their dot product equals cosine similarity; higher positive scores indicate greater similarity.
+- **Feature hashing:** A fixed-size way to map terms into vector positions. DevMind uses it for deterministic unit tests; it does not learn meaning and is not semantic search.
+- **TF-IDF:** A sparse text-vector method that weights terms by how often they appear in a document and how uncommon they are across the collection. DevMind uses TF-IDF cosine as the default app retriever and as one evaluation condition.
+- **BM25 (Okapi BM25):** A lexical ranking function that combines term rarity with document-length-normalized term frequency. DevMind measured it in a five-instance pilot using unreviewed changed-file proxy labels.
+- **Reciprocal Rank Fusion (RRF):** A method that combines ranked lists using the reciprocal of rank plus a constant. DevMind uses equal-weight RRF for lexical and optional lexical-semantic comparisons; an RRF score is not a cosine similarity.
+- **Evaluation metric:** A defined calculation over recorded outcomes; a metric is meaningful only when its input records and missing values are reported.
+- **Issue analysis:** Structured features extracted from the report, such as keywords and coarse issue type.
+- **Rule-based text analytics:** Deterministic text processing that uses tokenization, normalization, stop-word filtering, term frequencies, and explicit signal rules. DevMind's Task Analyzer uses these methods; they are not a trained classifier.
+- **GitHub archive snapshot:** A ZIP download of a repository's source at a point in time. DevMind accepts public GitHub snapshots for local analysis and does not execute the downloaded files during import.
+- **Manifest V3:** Chrome's current extension manifest format. DevMind's local extension opens the web app and can pass the active public GitHub repository URL after a toolbar click.
+- **Test-passing candidate:** A proposed patch whose selected tests passed in the configured sandbox. It remains subject to human review and is not automatically a confirmed fix.
+- **Dashboard compatibility fallback:** A display default used when a saved report or an older in-memory stats module lacks a newer KPI field; it prevents the history page from raising a missing-key error.
+- **Reduced motion:** An accessibility preference that suppresses nonessential transitions and animations while keeping hover and focus feedback available through color and borders.
+- **Decorative background layer:** The supplied star-field video and poster fallback behind DevMind content; they do not participate in repository analysis.
+- **Public repository snapshot:** A bounded GitHub ZIP download that DevMind extracts and indexes locally as data; repository code is not run during analysis.
+- **Hover state:** A visual response when the pointer is over a control; DevMind's primary action lifts slightly and gains a soft light outline to signal that it can be activated.
+- **Query variant:** A deterministic, versioned alternative representation of one unchanged bug report used to compare retrieval conditions. DevMind `devmind-query-v1` records raw, normalized, keyword/identifier, and structured forms.
+- **Changed-file proxy:** A file changed by the linked fix PR used as a weak localization label. It does not prove that the file or every function in it contains the defect.
+- **MRR (Mean Reciprocal Rank):** The average reciprocal rank of the first relevant result across queries. It is only meaningful when relevance labels are present.
+- **nDCG (normalized Discounted Cumulative Gain):** A ranked retrieval metric that gives more credit to relevant items appearing near the top and normalizes by the ideal ranking.
+- **Lexical retrieval:** Search based on matching terms rather than semantic vector similarity.
+- **RAG (Retrieval-Augmented Generation):** A pattern that retrieves relevant material and provides it to a language model as context.
+- **Top-k:** The maximum number of highest-ranked results to return for a search query.
+- **Provenance:** Information showing where a piece of evidence came from; DevMind reports repository-relative file, symbol, and line range.
+- **Context window:** The amount of input text a language model can process in one request. Limiting retrieved chunks helps control prompt size.
+- **Regression:** A previously working behavior that breaks after a code change.
+- **Structured logging:** Logs encoded as fields (for example, timestamp, level, event name) so they can be searched and processed consistently.
+- **Structured response:** A model response with a required data shape, such as a JSON object, that is checked before application code uses it.
+- **Evidence ID:** A temporary label (`E1`, `E2`, and so on) assigned to a retrieved source chunk for a single investigation request.
+- **Rate limit:** A provider response indicating that requests are arriving too quickly or have exceeded an allowance. DevMind retries a bounded number of times and then reports a typed failure.
+- **JSON Lines:** A text format with one independent JSON record on each line, useful for appending run history.
+- **Allow-list:** A set of explicitly approved paths. The local API only analyzes repository folders inside configured roots.
+- **Sandbox:** A constrained environment for executing untrusted tests or changes. DevMind tests in a network-disabled Docker container as UID/GID `10001:10001`, with a read-only root, bounded tmpfs, CPU/memory/process/time limits, all capabilities dropped, and `no-new-privileges`. Separate reader threads retain at most 4,000 characters from each output stream while draining the pipes. These controls reduce risk but do not prove isolation. Missing Docker configuration and OS-level launch errors are recorded as blocked runs.
+- **Sandbox image:** A prebuilt container environment used for tests. DevMind's project image includes Python 3.12, Git, and pytest; the target repository is mounted separately for each run.
+- **Line ending:** The invisible character sequence marking the end of a text line. Windows and Linux commonly use different sequences; the sandbox writes patch files using LF so Git can match Linux source files.
+- **Diff context line:** An unchanged line included around an edit so a patch tool can find the correct place to apply it. Even a single leading space can be meaningful in this format.
+- **Unified diff:** A standard text representation of line edits that patch tools can apply.
+- **Unified diff validation:** Checks that a proposed diff has matching file headers, valid hunks, safe supported source paths, and a real change before it can be saved or tested.
+- **Hunk recounting:** Recalculating the old and new line totals in a unified-diff hunk from its actual context, removed, and added lines.
+- **Thinking control:** An Ollama request option that can suppress a reasoning section when a model supports it; DevMind enables this with `DEVMIND_LLM_DISABLE_THINKING=true`.
+- **Verification:** Evidence from running relevant tests against the candidate change; a passing suite has limits and is not a universal proof of correctness.
+- **Release gate:** A set of checks that must pass before calling a product ready for its intended use. DevMind's full repair gate requires a real model proposal and a candidate test in a verified isolated environment.
+
+
+- **JavaScript lexical indexing:** Static discovery of braced JS/TS functions using line and brace scanning; it does not execute source and is not a full parser.
+- **Inline-script indexing:** Static extraction of braced JavaScript/TypeScript function spans from `<script>` blocks in `.html`/`.htm` files, reported with their original HTML line numbers. It does not execute page code.
+- **Node test runner:** Node.js built-in `node --test` command, run in DevMind's isolated Docker container when `DEVMIND_TEST_RUNNER=node` is configured.
+
+- **Provider retry limit:** Maximum additional calls after a retryable model-provider failure; DEVMIND_LLM_MAX_RETRIES accepts 0 through 3.
+- **SWE-bench Lite:** A subset of real GitHub issue-and-fix tasks used to evaluate software issue resolution. DevMind's adapter generates patch predictions; the official harness must execute tests and grade them before reporting resolution results.
+- **Base commit:** The exact repository revision associated with a benchmark task. Using it makes source context reproducible and avoids silently analyzing a later branch state.
+- **Prediction file:** JSON Lines containing a task ID and proposed patch for an evaluation harness. It is not evidence the patch passes tests.
+- **Changed-file proxy label:** A path changed by the linked fixing pull request that is used as a weak localization target. It is not an independent judgment that the path contains the defect.
+- **Snapshot content digest:** A deterministic SHA-256 calculated over repository paths, sizes, and file bytes. DevMind can compare a supplied digest before indexing so a changed snapshot is blocked.
+- **Dense document-index build time:** The elapsed time to embed repository chunks and prepare their normalized vector index. DevMind's current measurement also includes vector validation and preparation, not only a model's raw encode call.
+- **Query retrieval latency:** Time for one retrieval call. In the dense evaluator it includes query embedding plus similarity search, ranking, and file deduplication.
+- **Model revision:** A pinned model-repository commit hash. DevMind's pilot used all-MiniLM-L6-v2 at revision 1110a243fdf4706b3f48f1d95db1a4f5529b4d41.

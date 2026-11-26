@@ -1,0 +1,7 @@
+[
+  {
+    "issue_id": "safe-divide-zero-denominator",
+    "bug_report": "safe_divide raises ZeroDivisionError when denominator is zero instead of returning None",
+    "repository": "examples/buggy_project"
+  }
+]

@@ -1,0 +1,6 @@
+[console_scripts]
+devmind = devmind.cli:main
+devmind-api = devmind.api:main
+devmind-evaluate = devmind.evaluation_cli:main
+devmind-retrieval-evaluate = devmind.retrieval_evaluation:main
+devmind-swebench = devmind.swebench_cli:main

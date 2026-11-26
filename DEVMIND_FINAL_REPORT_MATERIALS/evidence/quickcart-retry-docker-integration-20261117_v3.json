@@ -1,0 +1,277 @@
+{
+  "run_date_utc": "2026-11-17T06:11:48.741676+00:00",
+  "scope": "Synthetic QuickCart-like fixture; not an upstream repository.",
+  "provider": "deterministic two-response fixture; no LLM call",
+  "docker_image": "devmind-sandbox:node22",
+  "issue": "Cart contents and badge disappear after page refresh; reload saved cart items from localStorage.",
+  "initial_evidence_paths": [
+    "index.html"
+  ],
+  "source_tree_sha256_before": "bf1f763124e8185f51698755057d12f75eead02e2069a498da466e4227f6bc21",
+  "source_tree_sha256_after": "bf1f763124e8185f51698755057d12f75eead02e2069a498da466e4227f6bc21",
+  "source_tree_unchanged": true,
+  "status": "tests_passed_review_required",
+  "attempt_count": 2,
+  "events": [
+    {
+      "attempt": 1,
+      "stage": "model_request",
+      "message": "Requesting a candidate diff from the configured provider."
+    },
+    {
+      "attempt": 1,
+      "stage": "sandbox",
+      "message": "Testing the candidate in a disposable Docker copy."
+    },
+    {
+      "attempt": 1,
+      "stage": "failure_analysis",
+      "message": "Extracting test names and source locations from the bounded sandbox output.",
+      "failed_test_count": 1,
+      "stack_frame_count": 0
+    },
+    {
+      "attempt": 1,
+      "stage": "retrieval",
+      "message": "Searching the unchanged repository snapshot for failure-related evidence."
+    },
+    {
+      "attempt": 1,
+      "stage": "retrieval_complete",
+      "message": "Failure-informed retrieval completed against the unchanged repository snapshot.",
+      "new_evidence_count": 3
+    },
+    {
+      "attempt": 2,
+      "stage": "model_request",
+      "message": "Requesting a candidate diff from the configured provider."
+    },
+    {
+      "attempt": 2,
+      "stage": "sandbox",
+      "message": "Testing the candidate in a disposable Docker copy."
+    },
+    {
+      "attempt": 2,
+      "stage": "complete",
+      "message": "Candidate tests passed; human review is still required."
+    }
+  ],
+  "attempts": [
+    {
+      "attempt_id": "quickcart-synthetic-retry-source-only-final-attempt-01",
+      "issue_id": "quickcart-synthetic-retry-source-only-final",
+      "attempt": 1,
+      "status": "candidate_patch_tests_failed",
+      "model_request": true,
+      "sandbox_call": true,
+      "evidence_ids": [
+        "E1"
+      ],
+      "evidence": [
+        {
+          "path": "index.html",
+          "name": "loadCartFromStorage",
+          "kind": "Function",
+          "start_line": 15,
+          "end_line": 21,
+          "score": 0.074022,
+          "content": "    function loadCartFromStorage() {\n      const savedCart = localStorage.getItem(\"quickCartItems\");\n      if (savedCart) {\n        cartItems = JSON.parse(savedCart);\n        cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);\n      }\n    }",
+          "evidence_id": "E1"
+        }
+      ],
+      "evidence_selection": {
+        "method": "initial_issue_query",
+        "reason": "Evidence was retrieved from the unchanged repository snapshot before repair."
+      },
+      "feedback_sent_to_model": null,
+      "source_revision": null,
+      "candidate_patch": "diff --git a/index.html b/index.html\n--- a/index.html\n+++ b/index.html\n@@ -10 +10 @@\n-    // BUG: this refreshes the badge but never restores saved cart items.\n+    // Retry checkpoint: restoration is still missing.",
+      "patch_sha256": "8934703e54df54c292676972455707b782e59a2b70d30062aa1b39b64763f687",
+      "patch_validation": {
+        "valid": true,
+        "changed_paths": [
+          "index.html"
+        ]
+      },
+      "test_command": "node --test",
+      "test_runner": "node",
+      "test_timeout_seconds": 120,
+      "test_result": {
+        "executed": true,
+        "passed": false,
+        "timed_out": false,
+        "exit_code": 1,
+        "mode": "candidate_patch",
+        "runner": "node",
+        "test_command": "node --test",
+        "container_command": "git apply --ignore-whitespace --unidiff-zero /candidate.patch && command -v node >/dev/null && printf '__DEVMIND_TEST_COMMAND_STARTED__\\n' && exec node --test",
+        "timeout_seconds": 120,
+        "stdout": "TAP version 13\n# Subtest: cart contents and badge survive a page reload\nnot ok 1 - cart contents and badge survive a page reload\n  ---\n  duration_ms: 6.364596\n  type: 'test'\n  location: '/workspace/test/cart-reload.test.cjs:29:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    '0' !== '1'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: '1'\n  actual: '0'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/workspace/test/cart-reload.test.cjs:36:10)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 95.899029",
+        "stderr": "",
+        "stdout_truncated": false,
+        "stderr_truncated": false
+      },
+      "failure_analysis": {
+        "failed_tests": [
+          "cart contents and badge survive a page reload"
+        ],
+        "stack_frames": [],
+        "error_types": [
+          "AssertionError"
+        ],
+        "retrieval_terms": [
+          "cart",
+          "contents",
+          "and",
+          "badge",
+          "survive",
+          "page",
+          "reload"
+        ],
+        "summary": "Sandboxed tests failed. failed tests: cart contents and badge survive a page reload; error types: AssertionError."
+      },
+      "next_retrieval": {
+        "method": "tfidf_cosine",
+        "query": "Cart contents and badge disappear after page refresh; reload saved cart items from localStorage.\nFailure context: cart contents and badge survive page reload",
+        "reason": "Query augmented with extracted failing-test names, stack-frame paths/symbols, and error-class identifiers; search used the unchanged base repository.",
+        "new_evidence_ids": [
+          "E2",
+          "E3",
+          "E4"
+        ],
+        "new_evidence_paths": [
+          "test/cart-reload.test.cjs",
+          "index.html"
+        ]
+      }
+    },
+    {
+      "attempt_id": "quickcart-synthetic-retry-source-only-final-attempt-02",
+      "issue_id": "quickcart-synthetic-retry-source-only-final",
+      "attempt": 2,
+      "status": "tests_passed_review_required",
+      "model_request": true,
+      "sandbox_call": true,
+      "evidence_ids": [
+        "E2",
+        "E1",
+        "E3",
+        "E4"
+      ],
+      "evidence": [
+        {
+          "path": "test/cart-reload.test.cjs",
+          "name": "loadPage",
+          "kind": "Function",
+          "start_line": 11,
+          "end_line": 27,
+          "score": 0.116534,
+          "content": "function loadPage(storage) {\n  const listeners = {};\n  const cartCount = { textContent: \"0\" };\n  const context = {\n    localStorage: {\n      getItem: (key) => storage.get(key) ?? null,\n      setItem: (key, value) => storage.set(key, String(value)),\n    },\n    window: { addEventListener: (name, callback) => { listeners[name] = callback; } },\n    document: { getElementById: (id) => id === \"cartCount\" ? cartCount : null },\n    JSON,\n    String,\n  };\n  vm.runInNewContext(inlineScript, context, { filename: \"index.html#inline-script\" });\n  listeners.load();\n  return { context, cartCount };\n}",
+          "evidence_id": "E2"
+        },
+        {
+          "path": "index.html",
+          "name": "loadCartFromStorage",
+          "kind": "Function",
+          "start_line": 15,
+          "end_line": 21,
+          "score": 0.052801,
+          "content": "    function loadCartFromStorage() {\n      const savedCart = localStorage.getItem(\"quickCartItems\");\n      if (savedCart) {\n        cartItems = JSON.parse(savedCart);\n        cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);\n      }\n    }",
+          "evidence_id": "E1"
+        },
+        {
+          "path": "index.html",
+          "name": "addToCart",
+          "kind": "Function",
+          "start_line": 27,
+          "end_line": 34,
+          "score": 0.031892,
+          "content": "    function addToCart(productName, price) {\n      const existingItem = cartItems.find((item) => item.name === productName);\n      if (existingItem) existingItem.quantity += 1;\n      else cartItems.push({ name: productName, price, quantity: 1 });\n      cartCount += 1;\n      saveCartToStorage();\n      updateCartDisplay();\n    }",
+          "evidence_id": "E3"
+        },
+        {
+          "path": "index.html",
+          "name": "saveCartToStorage",
+          "kind": "Function",
+          "start_line": 23,
+          "end_line": 25,
+          "score": 0.027869,
+          "content": "    function saveCartToStorage() {\n      localStorage.setItem(\"quickCartItems\", JSON.stringify(cartItems));\n    }",
+          "evidence_id": "E4"
+        }
+      ],
+      "evidence_selection": {
+        "method": "failure_informed_tfidf_cosine",
+        "reason": "Query augmented with extracted failing-test names, stack-frame paths/symbols, and error-class identifiers; search used the unchanged base repository.",
+        "query": "Cart contents and badge disappear after page refresh; reload saved cart items from localStorage.\nFailure context: cart contents and badge survive page reload",
+        "new_evidence_ids": [
+          "E2",
+          "E3",
+          "E4"
+        ]
+      },
+      "feedback_sent_to_model": {
+        "executed": true,
+        "passed": false,
+        "timed_out": false,
+        "exit_code": 1,
+        "runner": "node",
+        "failure_analysis": {
+          "failed_tests": [
+            "cart contents and badge survive a page reload"
+          ],
+          "stack_frames": [],
+          "error_types": [
+            "AssertionError"
+          ],
+          "retrieval_terms": [
+            "cart",
+            "contents",
+            "and",
+            "badge",
+            "survive",
+            "page",
+            "reload"
+          ],
+          "summary": "Sandboxed tests failed. failed tests: cart contents and badge survive a page reload; error types: AssertionError."
+        }
+      },
+      "source_revision": null,
+      "candidate_patch": "diff --git a/index.html b/index.html\n--- a/index.html\n+++ b/index.html\n@@ -10,3 +10,4 @@\n     // BUG: this refreshes the badge but never restores saved cart items.\n     window.addEventListener(\"load\", function () {\n+      loadCartFromStorage();\n       updateCartDisplay();",
+      "patch_sha256": "bb80b675d0e27e984d8a9a696987b6cc49c6e456e63c9696076a0296f76db4eb",
+      "patch_validation": {
+        "valid": true,
+        "changed_paths": [
+          "index.html"
+        ]
+      },
+      "test_command": "node --test",
+      "test_runner": "node",
+      "test_timeout_seconds": 120,
+      "test_result": {
+        "executed": true,
+        "passed": true,
+        "timed_out": false,
+        "exit_code": 0,
+        "mode": "candidate_patch",
+        "runner": "node",
+        "test_command": "node --test",
+        "container_command": "git apply --ignore-whitespace --unidiff-zero /candidate.patch && command -v node >/dev/null && printf '__DEVMIND_TEST_COMMAND_STARTED__\\n' && exec node --test",
+        "timeout_seconds": 120,
+        "stdout": "TAP version 13\n# Subtest: cart contents and badge survive a page reload\nok 1 - cart contents and badge survive a page reload\n  ---\n  duration_ms: 1.908905\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 79.353288",
+        "stderr": "",
+        "stdout_truncated": false,
+        "stderr_truncated": false
+      },
+      "review": {
+        "verdict": "tests_passed_review_required",
+        "reason": "Candidate patch tests passed in isolation; human review is still required."
+      }
+    }
+  ],
+  "final_review": {
+    "verdict": "tests_passed_review_required",
+    "reason": "Candidate patch tests passed in isolation; human review is still required."
+  }
+}

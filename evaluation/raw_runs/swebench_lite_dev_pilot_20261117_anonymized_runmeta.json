@@ -1,0 +1,27 @@
+{
+  "command": [
+    "C:\\TECH\\S5\\TEXT ANALYTICS\\PROJECT\\.venv\\Scripts\\python.exe",
+    "-m",
+    "devmind.retrieval_evaluation",
+    "--inputs",
+    "datasets/evaluation_inputs.csv",
+    "--labels",
+    "datasets/retrieval_ground_truth.csv",
+    "--output",
+    "evaluation/raw_runs/swebench_lite_dev_pilot_20261117_anonymized.jsonl",
+    "--top-k",
+    "5"
+  ],
+  "exit_code": 0,
+  "started_at_utc": "2026-11-16T20:47:50.536750+00:00",
+  "elapsed_seconds": 7.8416,
+  "peak_process_tree_rss_bytes_sampled": 201695232,
+  "peak_process_tree_rss_mib_sampled": 192.35,
+  "sampling_interval_seconds": 0.025,
+  "process_memory_samples": 483,
+  "inputs_sha256": "12ee4a2b50ed25851ddf26eb9db8ad9b5f0c2d70cfb4acb470385b5149724df7",
+  "labels_sha256": "56d01974dfa148ec47c6896ceb6904d46874ea86281ed320a450e0d23fbfc04a",
+  "stdout": "Wrote retrieval records to evaluation\\raw_runs\\swebench_lite_dev_pilot_20261117_anonymized.jsonl",
+  "stderr": "C:\\TECH\\S5\\TEXT ANALYTICS\\PROJECT\\.devmind\\retrieval-pilot\\pilot-02\\versioneer.py:485: SyntaxWarning: invalid escape sequence '\\s'\n  LONG_VERSION_PY['git'] = '''",
+  "measurement_note": "Peak Windows process-tree resident set sampled with psutil every 25ms; brief peaks may be missed. Every supplied snapshot digest was checked before indexing. Evaluation IDs and snapshot paths are opaque; fix PR URLs remain in the separate provenance manifest. No target repository code was executed."
+}
