@@ -2,7 +2,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.12%2B-blue.svg?logo=python&logoColor=white" alt="Python 3.12+">
-  <img src="https://img.shields.io/badge/Tests-180%20Passed-brightgreen.svg?logo=pytest&logoColor=white" alt="180 Passed Tests">
+  <img src="https://img.shields.io/badge/Tests-179%20Passed%20%7C%203%20Skipped-brightgreen.svg?logo=pytest&logoColor=white" alt="179 passed and 3 skipped in the documented test run">
   <img src="https://img.shields.io/badge/UI-Streamlit-FF4B4B.svg?logo=streamlit&logoColor=white" alt="Streamlit UI">
   <img src="https://img.shields.io/badge/Sandbox-Docker%20Non--Root-2496ED.svg?logo=docker&logoColor=white" alt="Docker Non-Root">
   <img src="https://img.shields.io/badge/Architecture-Hybrid%20RAG%20%2B%20ReAct-purple.svg" alt="Hybrid RAG + ReAct">
@@ -23,8 +23,18 @@
   3. *Isolated Execution:* Candidate code executes inside a non-root (`UID 10001`), zero-network (`--network=none`), capability-dropped Docker container. Never on the host OS!
   4. *Human Review Gate:* Host files on disk are **never modified** until the developer reviews the visual diff and clicks `[ ✅ Yes, Update Code in Files ]`.
 - 🛑 **Deterministic 3-Attempt Halting Policy:** Enforces a hard budget of 3 repair iterations to eliminate infinite loops and runaway API token costs.
-- ⚡ **Edge & Cloud LLM Flexibility:** Operates with surgical accuracy on lightweight **1.7B edge models** (e.g. Qwen2.5-Coder running locally on laptop VRAM) as well as cloud reasoning models (DeepSeek, GPT-4, Claude).
-- 🧪 **180 Passing Automated Tests:** Robust unit and integration test coverage across all RAG, AST, Docker, and UI components.
+- ⚡ **Optional Model Providers:** The architecture includes optional local/cloud model integration for investigation and candidate patch generation. Live model-generated repair is still experimental; see the verification note below.
+- 🧪 **Documented test run:** 179 passed and 3 skipped; the skips require Windows symlink-creation permission. See `docs/IMPLEMENTATION_STATUS.md` for the dated evidence and exact command.
+
+---
+
+## ⚠️ Verification status and current limitations
+
+The deterministic analysis, retrieval, patch-validation, sandbox, reporting, and human-review paths have documented automated and integration evidence. The latest recorded full-suite run is **179 passed, 3 skipped** (17 November 2026); the skipped tests require Windows symlink-creation permission.
+
+**Live LLM repair is not yet verified end-to-end.** A local Qwen3 1.7B run produced a structurally valid candidate diff, but the patch did not apply in the Docker test environment. A follow-up focused request timed out after 180 seconds. Consequently, this README does not claim that a live model-generated fix was successfully applied and test-verified. The system's benchmark and deterministic repair demonstrations are separate from that live-provider result.
+
+For the detailed evidence, evaluation limits, and known blockers, read [the implementation and evidence status](docs/IMPLEMENTATION_STATUS.md).
 
 ---
 
@@ -144,10 +154,10 @@ DevMind/
 
 ## 🧪 Running Automated Tests
 
-DevMind maintains a **100% pass rate** across its test suite:
+On the documented run, all non-skipped tests passed: **179 passed, 3 skipped**. The skips require Windows symlink-creation permission; see `docs/IMPLEMENTATION_STATUS.md` for the run date and verification details:
 
 ```powershell
-# Run the complete test suite (180 passing tests)
+# Run the complete test suite (documented run: 179 passed, 3 skipped)
 .\.venv\Scripts\python.exe -m pytest
 
 # Run Streamlit UI tests
